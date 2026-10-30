@@ -1,0 +1,1453 @@
+{
+  "profile": {
+    "name_zh": "薛一飞",
+    "name_en": "Yifei (Allen) Xue",
+    "alias": [
+      "薛困惑",
+      "Allen"
+    ],
+    "tagline_zh": "产品设计师，设计系统建设者，设计工程师",
+    "tagline_en": "Product Designer, Design System Builder, Design Engineer",
+    "bio_zh": "拥有产品与体验设计背景，设计生涯从视觉传达开始，研究生阶段转入交互设计；曾在 IBM、Microsoft 做体验设计实习，校招加入字节跳动飞书，再到快手做设计系统，并于百度 MEUX 负责内容生态设计系统；近期在小米 HyperOS 设计系统与设计工程方向工作（Notion 履历 / 职业叙事）。公开个人站 xyf.design（Framer）自我简介仍写「currently working at Baidu MEUX」。创造力是人生意义的一部分，即使曾在现实中受挫，我始终努力守护它。",
+    "bio_en": "With a product and experience design background—starting in visual communication and shifting to interaction design in graduate school—interned at IBM and Microsoft, joined ByteDance Feishu via campus recruiting, built design systems at Kuaishou, and worked on the content-ecosystem design system at Baidu MEUX. Recent work (Notion career narrative / resume hub) centers on Xiaomi HyperOS design system and design engineering. The public site xyf.design (Framer) still states “currently working at Baidu MEUX.” Creativity is part of life’s meaning; even after setbacks in reality, I keep guarding it.",
+    "links": [
+      {
+        "label": "Personal site",
+        "url": "https://xyf.design"
+      },
+      {
+        "label": "GitHub",
+        "url": "https://github.com/xue7106211"
+      },
+      {
+        "label": "Douban",
+        "url": "https://www.douban.com/people/52282329/"
+      }
+    ]
+  },
+  "experience": [
+    {
+      "company_zh": "小米 / HyperOS",
+      "company_en": "Xiaomi / HyperOS",
+      "role_zh": "设计系统 & 设计工程",
+      "role_en": "Design System & Design Engineering",
+      "period": "2025–",
+      "period_note": "Exact start month not stated in Notion; 职业叙事 groups HyperOS work as「设计系统&工程化（2025–2026）」. Public xyf.design does not yet list Xiaomi.",
+      "highlights_zh": [
+        "Design Token 中心化管理平台（hyperostoken.netlify.app），累计沉淀/管理 600+ OS4 Token",
+        "组件原子化：材质与内容分离；OS4 引入组件插槽（Slots）重构容器类组件",
+        "近手浮窗等组件交付算法级锚定规则，可交互 Demo（hyperos-popover.netlify.app）",
+        "Figma 插件：玻璃材质/混色模糊、HyperOS Material、图层语义化命名（预估百万 Node 级）",
+        "HyperOS 多端适配 Skill：Figma MCP + Agent，手机稿适配 Fold / Pad",
+        "Figma → AI → 飞书文档自动化理解设计/变量/组件规格",
+        "RAG 知识库 & 飞书机器人 HyperOSDesign（Mify 工作流）",
+        "AI-Native 工作流：Figma 组件到 Markdown 规格、设计稿转代码、Figma/MIUIX 组件命名表"
+      ],
+      "highlights_en": [
+        "Centralized Design Token platform (hyperostoken.netlify.app); 600+ OS4 tokens managed",
+        "Component atomization: separate material and content; OS4 slots for container components",
+        "Near-hand popover rules delivered at algorithm level with interactive demo",
+        "Figma plugins: glass/blur materials, HyperOS Material, semantic layer naming (estimated million-node scale)",
+        "Multi-device adaptation Skill via Figma MCP + Agent (phone → Fold / Pad)",
+        "Figma → AI → Feishu doc automation for specs/variables/components",
+        "RAG knowledge base & Feishu bot HyperOSDesign (Mify workflow)",
+        "AI-native workflow: Figma components to Markdown specs, design-to-code, Figma/MIUIX naming map"
+      ],
+      "source": [
+        "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be",
+        "https://app.notion.com/p/3bb55e17a9b480b88c71d548099f76c7",
+        "https://app.notion.com/p/3f655e17a9b481fda4cbe2d556d2068a"
+      ]
+    },
+    {
+      "company_zh": "百度 MEUX",
+      "company_en": "Baidu MEUX",
+      "role_zh": "体验设计 / 内容生态设计系统",
+      "role_en": "Experience Design / Content-Ecosystem Design System",
+      "period": "2023.06–",
+      "period_note": "xyf.design:「2023 年 6 月起加入」; public site still says currently at Baidu. End date vs Xiaomi start uncertain.",
+      "highlights_zh": [
+        "负责内容生态方向设计；涵盖百家号相关业务、百度 App 的 AI 发布器设计，以及百家号 Web 端设计系统建设与维护（xyf.design）",
+        "内容生态 Token 体系：基础层 / 语义层 / 组件层；多主题（SaaS 浅色、视频编辑器深色）",
+        "组件属性与代码 Props 对齐；Auto Layout 结构化；Instance Swap 插槽降低分离率",
+        "数字资产工程化：图标 SVG 化、px→em 脚本、语义命名、NPM 包（@baidu/icons）",
+        "工作流驱动文档：Figma 组件作信息索引，设计指南沉淀于企业文档，研发侧 Dumi API"
+      ],
+      "highlights_en": [
+        "Content-ecosystem design: Baijiahao-related work, Baidu App AI publisher, Baijiahao Web design system (xyf.design)",
+        "Content-ecosystem token system: base / semantic / component layers; multi-theme (SaaS light, video editor dark)",
+        "Aligned Figma properties with code props; structured Auto Layout; Instance Swap slots to reduce detach rate",
+        "Digital assets: SVG icons, px→em script, semantic names, NPM package (@baidu/icons)",
+        "Workflow-driven docs: Figma components as index; design guides in enterprise docs; Dumi APIs for eng"
+      ],
+      "source": [
+        "https://xyf.design",
+        "https://app.notion.com/p/21955e17a9b48079bea7cd1b911526ff",
+        "https://app.notion.com/p/40355e17a9b4811ebab6e589766e489d"
+      ]
+    },
+    {
+      "company_zh": "快手 KID",
+      "company_en": "Kuaishou KID",
+      "role_zh": "设计中台 / 设计系统主 R",
+      "role_en": "Design Platform / Design System Lead (主 R)",
+      "period": "2022–2023",
+      "period_note": "设计系统工程化分享 & xyf.design say 2022 join / 2022–2023. Kuaishou Design System* page says「2021年秋天加入」— flagged as conflict.",
+      "highlights_zh": [
+        "企业服务 Design System 主 R；服务 5+ 业务线、30+ 产品平台；覆盖 Vue2、Vue3、React",
+        "建设 38+ 基础组件；三级 Design Token；中心化 NPM Token Library；Klib × Figma 自动化维护",
+        "组件分离率 0.56%；文档选型 Supernova + Storybook",
+        "设计工程化、设计效能、DesignOps（Sketch→Figma 等工作流）",
+        "快手绩效：两次 A，并完成一次晋升答辩（自我介绍）"
+      ],
+      "highlights_en": [
+        "Lead (主 R) for enterprise Design System; 5+ business lines, 30+ product platforms; Vue2/Vue3/React",
+        "38+ base components; 3-tier Design Tokens; centralized NPM Token Library; Klib × Figma automation",
+        "Component detach rate 0.56%; docs via Supernova + Storybook",
+        "Design engineering, efficiency tooling, DesignOps (incl. Sketch→Figma workflows)",
+        "Performance: two A ratings and one promotion defense (self-intro page)"
+      ],
+      "source": [
+        "https://app.notion.com/p/1c025fe11b604e22805d34ad1bad4bef",
+        "https://app.notion.com/p/21955e17a9b48079bea7cd1b911526ff",
+        "https://xyf.design",
+        "https://app.notion.com/p/6926c236b4e74443b09158f3b004dba7"
+      ]
+    },
+    {
+      "company_zh": "字节跳动 · 飞书",
+      "company_en": "ByteDance · Feishu / Lark",
+      "role_zh": "用户体验设计师",
+      "role_en": "UX Designer",
+      "period": "2019.10–2021",
+      "period_note": "2019秋校招 Offer，10月提前实习（工作坊页）；2020年正式加入（工程化分享）；xyf.design lists 2019–2021 / 2020 campus hire. End year vs Kuaishou start (2021秋 vs 2022) uncertain.",
+      "highlights_zh": [
+        "飞书任务业务主设计：MVP 2020.12；1.0 2021.1–4；2.0 2021.5–6；PC/Mobile/iPad 三端",
+        "飞书第一版 DS（Universe Design）官网；贡献组件与规范（含快捷键、Pointer、触控板、iPadOS 快捷键等 4 篇规范）",
+        "飞书 5.0（IG）：参与信息架构（周陟、丘陵、依晨、兆元、孙健、薛一飞）；任务与日历深色模式；卡片化；研发交付分类",
+        "Design Thinking 工作坊：沉淀 20+ 设计方法工具包、Design Work Shop 101；选入 Lark 品质手册",
+        "iPadOS 专项核心参与者：四篇规范；App Store 推荐并登上苹果发布会（团队结果）",
+        "绩效：M+；SpotBonus；双月优秀员工（自我介绍）"
+      ],
+      "highlights_en": [
+        "Feishu Task lead design: MVP 2020.12; 1.0 Jan–Apr 2021; 2.0 May–Jun 2021; PC/Mobile/iPad",
+        "First Universe Design website; contributed components/specs (shortcuts, Pointer, trackpad, iPadOS shortcuts—4 specs)",
+        "Feishu 5.0 (IG): information architecture co-author; Task/Calendar dark mode; card UI; eng handoff taxonomy",
+        "Design Thinking workshops: 20+ method toolkit, Design Work Shop 101; included in Lark quality handbook",
+        "iPadOS program core member: four specs; App Store feature and Apple event appearance (team outcome)",
+        "Performance: M+; SpotBonus; bi-monthly outstanding employee (self-intro)"
+      ],
+      "source": [
+        "https://app.notion.com/p/21955e17a9b48079bea7cd1b911526ff",
+        "https://app.notion.com/p/7d05778f5e2a42da836fabb12e64683c",
+        "https://app.notion.com/p/2be9ac10d5b94fb2a6a9930c0357f57d",
+        "https://app.notion.com/p/0bf5639cf0af4acd9aee90798b0379c0",
+        "https://app.notion.com/p/c7417559276449d09991b03b31c03bf8",
+        "https://app.notion.com/p/cd63df6aa8ce4a5781d68d30cf2c89f5",
+        "https://app.notion.com/p/6926c236b4e74443b09158f3b004dba7",
+        "https://xyf.design"
+      ]
+    },
+    {
+      "company_zh": "微软亚洲研究院",
+      "company_en": "Microsoft Research Asia",
+      "role_zh": "用户体验设计实习生",
+      "role_en": "UX Design Intern",
+      "period": "2019",
+      "period_note": "Microsoft page DATE: 2019年09月1日; body also says「2019 年初」— date precision uncertain.",
+      "highlights_zh": [
+        "项目：从语义文本智能转换到 Infographic（Text-to-Viz 相关）",
+        "定义智能设计模型与设计模式；探索设计师与研发的通用描述语言",
+        "因项目保密，细节未公开"
+      ],
+      "highlights_en": [
+        "Semantic text → Infographic product/service (related to Text-to-Viz)",
+        "Defined high-level intelligent design model and patterns; shared description language with eng",
+        "Details withheld due to confidentiality"
+      ],
+      "source": [
+        "https://app.notion.com/p/1ba7a33b32404033b77a437b2c5fa2af",
+        "https://www.microsoft.com/en-us/research/project/text-to-viz/"
+      ]
+    },
+    {
+      "company_zh": "IBM 客户体验与创新中心",
+      "company_en": "IBM Client Experience & Innovation Center",
+      "role_zh": "用户体验设计实习生",
+      "role_en": "UX Design Intern",
+      "period": "2018 Summer",
+      "highlights_zh": [
+        "18 周企业客户早期概念探索；UX 研究与设计；Design Thinking 工作坊",
+        "获得 Enterprise Design Thinking Practitioner & Co-Creator Badge",
+        "因 NDA 无法分享具体产品细节"
+      ],
+      "highlights_en": [
+        "18-week early-stage concept for enterprise clients; UX research/design; Design Thinking workshops",
+        "Earned Enterprise Design Thinking Practitioner & Co-Creator badges",
+        "Specific product details withheld under NDA"
+      ],
+      "source": [
+        "https://app.notion.com/p/c6a16b11d86c48098a96336a93594281"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "slug": "hyperos-design-token-platform",
+      "title_zh": "HyperOS Design Token 中心化管理平台",
+      "title_en": "HyperOS Design Token Management Platform",
+      "summary_zh": "Token 编辑、分组、多选、Changelog、语法高亮与双主题；累计沉淀/管理 600+ OS4 Token。",
+      "summary_en": "Token editing, grouping, multi-select, changelog, syntax highlighting, dual themes; 600+ OS4 tokens managed.",
+      "role": "Design Engineer",
+      "tags": [
+        "Design Token",
+        "HyperOS",
+        "Design Engineering"
+      ],
+      "metrics": [
+        "600+ OS4 Token"
+      ],
+      "links": [
+        {
+          "label": "Live",
+          "url": "https://hyperostoken.netlify.app/"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/xue7106211/design-token-viewer"
+        }
+      ],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be",
+      "confidentiality": "Public URL listed in career narrative; avoid OS5 internal scheme details beyond public narrative"
+    },
+    {
+      "slug": "hyperos-component-slots",
+      "title_zh": "HyperOS 组件原子化与插槽",
+      "title_en": "HyperOS Component Atomization & Slots",
+      "summary_zh": "材质与内容分离；OS4 引入 Slots 重构容器类组件；近手浮窗算法级锚定规则与可交互 Demo。",
+      "summary_en": "Separate material and content; OS4 slots for containers; near-hand popover anchoring rules with interactive demo.",
+      "role": "Design Engineer",
+      "tags": [
+        "Components",
+        "Slots",
+        "HyperOS"
+      ],
+      "metrics": [],
+      "links": [
+        {
+          "label": "Popover demo",
+          "url": "https://hyperos-popover.netlify.app/"
+        }
+      ],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be"
+    },
+    {
+      "slug": "hyperos-figma-plugins",
+      "title_zh": "HyperOS Figma 插件系列",
+      "title_en": "HyperOS Figma Plugin Suite",
+      "summary_zh": "玻璃材质/混色模糊；Material 插件灌入材质 4 组（L3/L4，深浅色）；图层语义化命名服务 OS4 库全量图层。",
+      "summary_en": "Glass/blur materials; Material plugin with 4 material sets (L3/L4, light/dark); semantic layer naming for full OS4 library.",
+      "role": "Design Engineer",
+      "tags": [
+        "Figma Plugin",
+        "HyperOS"
+      ],
+      "metrics": [
+        "预估百万 Node 级别"
+      ],
+      "links": [
+        {
+          "label": "figma-token-organizer",
+          "url": "https://github.com/xue7106211/figma-token-organizer"
+        },
+        {
+          "label": "HyperDev",
+          "url": "https://github.com/xue7106211/HyperDev"
+        },
+        {
+          "label": "FrameInfo",
+          "url": "https://github.com/xue7106211/FrameInfo"
+        }
+      ],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be"
+    },
+    {
+      "slug": "hyperos-multi-device-skill",
+      "title_zh": "HyperOS 多端适配 Skill",
+      "title_en": "HyperOS Multi-Device Adaptation Skill",
+      "summary_zh": "基于 Figma MCP + Agent，手机稿适配 Fold / Pad：判断、组件映射、布局执行与验收；支持 Claude Code / Codex 等。",
+      "summary_en": "Figma MCP + Agent skill: adapt phone mocks to Fold/Pad—judgment, component mapping, layout, QA; Claude Code/Codex supported.",
+      "role": "Design Engineer",
+      "tags": [
+        "Agent Skill",
+        "MCP",
+        "Multi-device"
+      ],
+      "metrics": [],
+      "links": [
+        {
+          "label": "allen-skills",
+          "url": "https://github.com/xue7106211/allen-skills"
+        }
+      ],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be"
+    },
+    {
+      "slug": "figma-to-lark-automation",
+      "title_zh": "Figma To Lark 文档自动化",
+      "title_en": "Figma → Feishu Doc Automation",
+      "summary_zh": "基于 MCP，从 Figma → AI 大模型 → 飞书，完整自动化理解设计/变量/组件规格。",
+      "summary_en": "MCP-based pipeline: Figma → LLM → Feishu for automated understanding of design/variables/component specs.",
+      "role": "Design Engineer",
+      "tags": [
+        "MCP",
+        "Automation",
+        "Feishu"
+      ],
+      "metrics": [],
+      "links": [
+        {
+          "label": "Figma-MCP-Test",
+          "url": "https://github.com/xue7106211/Figma-MCP-Test"
+        }
+      ],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be"
+    },
+    {
+      "slug": "hyperos-rag-bot",
+      "title_zh": "HyperOSDesign RAG 飞书机器人",
+      "title_en": "HyperOSDesign RAG Feishu Bot",
+      "summary_zh": "基于 Mify 构建 RAG 知识库；飞书机器人 HyperOSDesign 绑定工作流接口做智能问答。",
+      "summary_en": "Mify-based RAG knowledge base; Feishu bot HyperOSDesign bound to workflow APIs for Q&A.",
+      "role": "Design Engineer",
+      "tags": [
+        "RAG",
+        "Agent",
+        "Feishu"
+      ],
+      "metrics": [],
+      "links": [],
+      "source": "https://app.notion.com/p/3b255e17a9b480a6b4b4d471fa1365be",
+      "confidentiality": "Internal Xiaomi Feishu bot name/platform—keep high-level only"
+    },
+    {
+      "slug": "baidu-content-ecosystem-ds",
+      "title_zh": "百度内容生态设计系统",
+      "title_en": "Baidu Content-Ecosystem Design System",
+      "summary_zh": "内容生态 Token 三层体系、组件 Props 对齐、插槽化、图标 NPM 工程化、工作流驱动文档。",
+      "summary_en": "Three-layer tokens, props alignment, slots, icon NPM packaging, workflow-driven documentation.",
+      "role": "Design System Builder",
+      "tags": [
+        "Design System",
+        "Design Token",
+        "Baidu MEUX"
+      ],
+      "metrics": [],
+      "links": [],
+      "source": "https://app.notion.com/p/21955e17a9b48079bea7cd1b911526ff"
+    },
+    {
+      "slug": "kuaishou-design-system",
+      "title_zh": "快手企业服务 Design System",
+      "title_en": "Kuaishou Enterprise Design System",
+      "summary_zh": "企服 DS 主 R：38+ 基础组件、三级 Token、NPM Token Library、Supernova+Storybook 文档；5+ 业务线 / 30+ 平台；组件分离率 0.56%。",
+      "summary_en": "Enterprise DS lead: 38+ components, 3-tier tokens, NPM Token Library, Supernova+Storybook; 5+ lines / 30+ platforms; 0.56% detach rate.",
+      "role": "主 R / Design System Lead",
+      "tags": [
+        "Design System",
+        "DesignOps",
+        "Kuaishou"
+      ],
+      "metrics": [
+        "38+ 基础组件",
+        "5+ 业务线",
+        "30+ 产品平台",
+        "组件分离率 0.56%"
+      ],
+      "links": [],
+      "source": "https://app.notion.com/p/1c025fe11b604e22805d34ad1bad4bef"
+    },
+    {
+      "slug": "feishu-universe-design",
+      "title_zh": "飞书 Universe Design / DS 官网",
+      "title_en": "Feishu Universe Design / DS Website",
+      "summary_zh": "设计飞书第一版 DS 官网；贡献组件与规范；撰写快捷键、Pointer、触控板、iPadOS 快捷键等规范。",
+      "summary_en": "Designed first Feishu DS website; contributed components/specs including shortcuts, Pointer, trackpad, iPadOS shortcuts.",
+      "role": "UX Designer",
+      "tags": [
+        "Design System",
+        "Feishu",
+        "Documentation"
+      ],
+      "metrics": [
+        "撰写 DS 规范 4 篇"
+      ],
+      "links": [],
+      "source": [
+        "https://app.notion.com/p/21955e17a9b48079bea7cd1b911526ff",
+        "https://app.notion.com/p/cd63df6aa8ce4a5781d68d30cf2c89f5",
+        "https://app.notion.com/p/58ab7aed847b4ad2a23800f9accec340"
+      ]
+    },
+    {
+      "slug": "feishu-task",
+      "title_zh": "飞书任务",
+      "title_en": "Feishu / Lark Task",
+      "summary_zh": "飞书套件核心任务模块全流程设计：用户洞察、设计策略、业务组件与三端交付；MVP→1.0→2.0→IG。",
+      "summary_en": "End-to-end design for Feishu Task: research, strategy, business components, three platforms; MVP→1.0→2.0→IG.",
+      "role": "体验设计师 / 业务接口人",
+      "tags": [
+        "Product Design",
+        "Feishu",
+        "Collaboration"
+      ],
+      "metrics": [
+        "MVP 2020.12",
+        "1.0 2021.1–4",
+        "2.0 2021.5–6"
+      ],
+      "links": [],
+      "source": [
+        "https://app.notion.com/p/7d05778f5e2a42da836fabb12e64683c",
+        "https://app.notion.com/p/6926c236b4e74443b09158f3b004dba7"
+      ]
+    },
+    {
+      "slug": "feishu-5-0",
+      "title_zh": "飞书 5.0（IG）",
+      "title_en": "Feishu 5.0 (IG)",
+      "summary_zh": "参与信息架构与本地化设计；负责任务三端与任务/日历深色模式；卡片化与研发交付分类。",
+      "summary_en": "IA and localization; Task on three platforms plus Task/Calendar dark mode; card UI and eng handoff taxonomy.",
+      "role": "UX Designer",
+      "tags": [
+        "Visual Redesign",
+        "Feishu"
+      ],
+      "metrics": [],
+      "links": [],
+      "source": "https://app.notion.com/p/2be9ac10d5b94fb2a6a9930c0357f57d"
+    },
+    {
+      "slug": "feishu-ipados",
+      "title_zh": "飞书 Design for iPadOS",
+      "title_en": "Feishu Design for iPadOS",
+      "summary_zh": "核心参与者；输出 Pointer/快捷键/触控板/模态适配四篇规范；团队结果含 App Store 推荐与苹果发布会。",
+      "summary_en": "Core contributor; four specs (Pointer, shortcuts, trackpad, modal); team outcomes include App Store feature and Apple event.",
+      "role": "体验设计师（核心参与者）",
+      "tags": [
+        "iPadOS",
+        "Specs",
+        "Feishu"
+      ],
+      "metrics": [
+        "输出四篇规范与指南"
+      ],
+      "links": [],
+      "source": "https://app.notion.com/p/c7417559276449d09991b03b31c03bf8"
+    },
+    {
+      "slug": "feishu-design-thinking",
+      "title_zh": "飞书工作坊 · Lark Design Thinking",
+      "title_en": "Feishu / Lark Design Thinking Workshops",
+      "summary_zh": "规划筹备工作坊；沉淀 20+ 方法工具包与 Design Work Shop 101；选入 Lark 品质手册。",
+      "summary_en": "Planned workshops; 20+ method toolkit and Design Work Shop 101; included in Lark quality handbook.",
+      "role": "主导 / 共创",
+      "tags": [
+        "Design Thinking",
+        "Workshop"
+      ],
+      "metrics": [
+        "20+ 设计方法工具包"
+      ],
+      "links": [],
+      "source": "https://app.notion.com/p/0bf5639cf0af4acd9aee90798b0379c0"
+    },
+    {
+      "slug": "microsoft-text-to-infographic",
+      "title_zh": "微软：语义文本转 Infographic",
+      "title_en": "Microsoft: Semantic Text to Infographic",
+      "summary_zh": "在微软亚洲研究院设计语义文本到 Infographic 的智能转换产品/服务；细节因保密未公开。",
+      "summary_en": "At MSRA, designed semantic-text-to-Infographic product/service; details confidential.",
+      "role": "UX & AI Design Intern",
+      "tags": [
+        "AI",
+        "Infographic",
+        "Internship"
+      ],
+      "metrics": [],
+      "links": [
+        {
+          "label": "Related MSR project",
+          "url": "https://www.microsoft.com/en-us/research/project/text-to-viz/"
+        }
+      ],
+      "source": "https://app.notion.com/p/1ba7a33b32404033b77a437b2c5fa2af",
+      "confidentiality": "NDA / unpublished papers—no internal details"
+    },
+    {
+      "slug": "ibm-ux-internship",
+      "title_zh": "IBM UX Design Internship",
+      "title_en": "IBM UX Design Internship",
+      "summary_zh": "IBM 客户体验与创新中心 18 周实习；企业概念与 Design Thinking 工作坊；NDA 限制细节。",
+      "summary_en": "18-week internship at IBM CEIC; enterprise concept and DT workshops; NDA limits detail.",
+      "role": "UX Design Intern",
+      "tags": [
+        "Internship",
+        "Design Thinking",
+        "Service Design"
+      ],
+      "metrics": [
+        "18 weeks",
+        "2 EDT badges"
+      ],
+      "links": [],
+      "source": "https://app.notion.com/p/c6a16b11d86c48098a96336a93594281",
+      "confidentiality": "NDA—no product specifics"
+    },
+    {
+      "slug": "lotus-service-design",
+      "title_zh": "易初莲花校园超市服务设计",
+      "title_en": "Lotus Campus Supermarket Service Design",
+      "summary_zh": "2018 与易初莲花合作提升汕头大学校园超市购物体验；实地研究后两月内重设系统方案。研究生阶段另获 2019 iF 服务设计奖（自我介绍；本页未写获奖绑定）。",
+      "summary_en": "2018 Lotus collaboration improving Shantou University campus supermarket UX; system redesign in two months after field study. Separately: 2019 iF Service Design award noted on self-intro (not linked on this page).",
+      "role": "Service Design / UX",
+      "tags": [
+        "Service Design",
+        "Student"
+      ],
+      "metrics": [],
+      "links": [],
+      "source": [
+        "https://app.notion.com/p/99a6bce8e4ed4f418a9929770d0235de",
+        "https://app.notion.com/p/6926c236b4e74443b09158f3b004dba7"
+      ],
+      "uncertain": "iF 2019 award stated on 自我介绍; Lotus page itself does not claim the award"
+    },
+    {
+      "slug": "chatgpt-intelligent-ui-recreation",
+      "title_zh": "个人项目：还原 ChatGPT Intelligent UI",
+      "title_en": "Personal: Recreate ChatGPT Intelligent UI (DIL)",
+      "summary_zh": "想法/待启动（2026-10-09）：用 DIL + 固定组件目录 + Design Token 还原 Intelligent UI；与 HyperOS Token/组件契约方向重合。",
+      "summary_en": "Idea / not started (2026-10-09): recreate Intelligent UI via DIL + fixed component catalog + tokens; aligns with HyperOS token/contract thinking.",
+      "role": "Personal",
+      "tags": [
+        "Personal",
+        "AI UI",
+        "Design System"
+      ],
+      "metrics": [],
+      "links": [],
+      "source": "https://app.notion.com/p/3f455e17a9b4814d8395c0142230fcfb"
+    }
+  ],
+  "skills": [
+    "Design System / Design Token",
+    "Design Engineering / DesignOps",
+    "Figma（Variables、Variants、Auto Layout、Plugins、MCP）",
+    "组件库与文档（Storybook、Supernova、Dumi、Fumadocs）",
+    "前端基础（Next.js、React、TypeScript、CSS/Token 导出）— from xyf.design + GitHub",
+    "AI 辅助工程（Cursor、Agent Skills、RAG/飞书机器人）— from 职业叙事",
+    "Design Thinking / Workshop facilitation",
+    "产品与体验设计（用户洞察、可用性测试、三端交付）",
+    "视觉传达 → 交互设计背景"
+  ],
+  "awards": [
+    {
+      "title_zh": "2019 iF 服务设计奖",
+      "title_en": "2019 iF Service Design Award",
+      "source": "https://app.notion.com/p/6926c236b4e74443b09158f3b004dba7",
+      "note": "Mentioned in 自我介绍; not detailed with project name on that page"
+    }
+  ],
+  "github_repos": [
+    {
+      "name": "allen-skills",
+      "description": "Allen 的 Agent Skills monorepo",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-10-27T01:30:36Z",
+      "url": "https://github.com/xue7106211/allen-skills",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "design-token-viewer",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-10-26T08:30:20Z",
+      "url": "https://github.com/xue7106211/design-token-viewer",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "figma-token-organizer",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-10-25T07:05:09Z",
+      "url": "https://github.com/xue7106211/figma-token-organizer",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "hyperos-design-system",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-10-22T12:54:49Z",
+      "url": "https://github.com/xue7106211/hyperos-design-system",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "hyperos-visual",
+      "description": "HyperOS design platform overview as a single local HTML page",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2026-10-16T03:36:32Z",
+      "url": "https://github.com/xue7106211/hyperos-visual",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "hyperos-design-guidline",
+      "description": "一起来写规范吧",
+      "language": "MDX",
+      "stars": 0,
+      "updated": "2026-10-08T02:24:57Z",
+      "url": "https://github.com/xue7106211/hyperos-design-guidline",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "allen-code",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-08-28T07:12:48Z",
+      "url": "https://github.com/xue7106211/allen-code",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "hyperos-requirement-priority",
+      "description": "HyperOS 设计系统需求价值评估网站",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-08-20T01:56:13Z",
+      "url": "https://github.com/xue7106211/hyperos-requirement-priority",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "chrome-plugin-tab",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-08-17T12:23:54Z",
+      "url": "https://github.com/xue7106211/chrome-plugin-tab",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "station-zero",
+      "description": "Station Zero 是一个高清观影决策系统，帮助用户判断一部片值不值得看、哪里能合法看、哪个高清版本最值得看。",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-09-18T11:08:27Z",
+      "url": "https://github.com/xue7106211/station-zero",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "hyperos-breakpoint",
+      "description": "MIUI Fork clone (HyperOS breakpoint explorer)",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-07-30T03:45:48Z",
+      "url": "https://github.com/xue7106211/hyperos-breakpoint",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "sync-repo-docs",
+      "description": "Cursor skill for auditing and synchronizing repository documentation, references, and dependency descriptions",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-07-22T13:24:33Z",
+      "url": "https://github.com/xue7106211/sync-repo-docs",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "skill-learn-repo",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-07-22T13:24:33Z",
+      "url": "https://github.com/xue7106211/skill-learn-repo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "design-clone",
+      "description": "High-fidelity webpage clone skill merging Design DNA and Surface Recon",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2026-07-22T13:24:33Z",
+      "url": "https://github.com/xue7106211/design-clone",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "ali-design-web-playbook",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-07-11T09:14:09Z",
+      "url": "https://github.com/xue7106211/ali-design-web-playbook",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "sanmu-pixi-js",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-06-22T14:01:06Z",
+      "url": "https://github.com/xue7106211/sanmu-pixi-js",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "stampstack",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2026-06-15T02:53:20Z",
+      "url": "https://github.com/xue7106211/stampstack",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "super-hover",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-06-09T06:08:42Z",
+      "url": "https://github.com/xue7106211/super-hover",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "de-tools",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-06-04T03:39:00Z",
+      "url": "https://github.com/xue7106211/de-tools",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "auto_design_agent",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-06-03T06:42:40Z",
+      "url": "https://github.com/xue7106211/auto_design_agent",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "ai-tutor",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-06-01T09:10:27Z",
+      "url": "https://github.com/xue7106211/ai-tutor",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "sanmu-portfolio-case",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2026-05-31T14:02:14Z",
+      "url": "https://github.com/xue7106211/sanmu-portfolio-case",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "smooth-corner-case",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2026-05-29T03:19:33Z",
+      "url": "https://github.com/xue7106211/smooth-corner-case",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "ai-demo-film-photo",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-04-18T15:50:03Z",
+      "url": "https://github.com/xue7106211/ai-demo-film-photo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "dany-works-web-demo",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-04-09T03:37:50Z",
+      "url": "https://github.com/xue7106211/dany-works-web-demo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "hermes-web-demo",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-04-09T03:07:40Z",
+      "url": "https://github.com/xue7106211/hermes-web-demo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "apple-hello-web-demo",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2026-04-08T06:14:24Z",
+      "url": "https://github.com/xue7106211/apple-hello-web-demo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "figma-remote-rename",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2026-04-03T02:55:01Z",
+      "url": "https://github.com/xue7106211/figma-remote-rename",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "pretext-demo",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2026-03-31T02:10:19Z",
+      "url": "https://github.com/xue7106211/pretext-demo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "AI-Speaker",
+      "description": "",
+      "language": "Python",
+      "stars": 0,
+      "updated": "2026-03-15T14:00:14Z",
+      "url": "https://github.com/xue7106211/AI-Speaker",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "ds-to-md-compiler",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-03-10T01:20:06Z",
+      "url": "https://github.com/xue7106211/ds-to-md-compiler",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "figma-to-guides",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2026-03-04T08:56:11Z",
+      "url": "https://github.com/xue7106211/figma-to-guides",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "remake-ai-components",
+      "description": "",
+      "language": "",
+      "stars": 1,
+      "updated": "2026-03-01T08:44:08Z",
+      "url": "https://github.com/xue7106211/remake-ai-components",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "visual-style-extraction",
+      "description": "",
+      "language": "CSS",
+      "stars": 0,
+      "updated": "2026-03-01T05:37:06Z",
+      "url": "https://github.com/xue7106211/visual-style-extraction",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "sanmu-todo",
+      "description": "",
+      "language": "CSS",
+      "stars": 0,
+      "updated": "2026-02-10T15:42:34Z",
+      "url": "https://github.com/xue7106211/sanmu-todo",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "appwidget",
+      "description": "",
+      "language": "Kotlin",
+      "stars": 0,
+      "updated": "2026-02-07T14:49:45Z",
+      "url": "https://github.com/xue7106211/appwidget",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "rover-management",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2026-01-27T12:18:24Z",
+      "url": "https://github.com/xue7106211/rover-management",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "hyperos-popover",
+      "description": "popover组件弹出策略",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2026-01-06T01:57:37Z",
+      "url": "https://github.com/xue7106211/hyperos-popover",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "sanmu-case3.0-wheel",
+      "description": "",
+      "language": "CSS",
+      "stars": 0,
+      "updated": "2026-01-03T04:56:00Z",
+      "url": "https://github.com/xue7106211/sanmu-case3.0-wheel",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "sanmu-case2-mouseevent",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2025-12-28T04:10:30Z",
+      "url": "https://github.com/xue7106211/sanmu-case2-mouseevent",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "HyperBox",
+      "description": "HyperOS3 样式工具",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-12-22T02:06:58Z",
+      "url": "https://github.com/xue7106211/HyperBox",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "HyperDev",
+      "description": "用于研发查看 Glass 的 Dev 插件",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-12-11T01:42:50Z",
+      "url": "https://github.com/xue7106211/HyperDev",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "sanmu-case1",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2025-12-11T01:17:35Z",
+      "url": "https://github.com/xue7106211/sanmu-case1",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "practice-code-imooc",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-12-07T08:51:00Z",
+      "url": "https://github.com/xue7106211/practice-code-imooc",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "manga-pdf",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-12-02T08:21:34Z",
+      "url": "https://github.com/xue7106211/manga-pdf",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "FrameInfo",
+      "description": "获取 FrameInfo 信息，用于 GlassWeb 网站使用",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-11-26T01:41:48Z",
+      "url": "https://github.com/xue7106211/FrameInfo",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "Hyper-Dev",
+      "description": "用于研发查看具体的 Glass 参数",
+      "language": "",
+      "stars": 0,
+      "updated": "2025-11-18T10:10:42Z",
+      "url": "https://github.com/xue7106211/Hyper-Dev",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "8bitcn-comp-test",
+      "description": "8-bit 像素风格 UI 组件展示，基于 Next.js 14 + Tailwind CSS + 8bitcn/ui",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-11-03T06:16:59Z",
+      "url": "https://github.com/xue7106211/8bitcn-comp-test",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "Figma-MCP-Test",
+      "description": "Figma2Lark自动化生产",
+      "language": "CSS",
+      "stars": 0,
+      "updated": "2025-10-27T13:31:04Z",
+      "url": "https://github.com/xue7106211/Figma-MCP-Test",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "Mi-Plugin",
+      "description": "Mi插件流程尝试",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-10-22T13:24:55Z",
+      "url": "https://github.com/xue7106211/Mi-Plugin",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "git-ascii",
+      "description": "Git 可视化工具 - 通过 ASCII 艺术图形化展示代码提交历史",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-09-28T07:02:13Z",
+      "url": "https://github.com/xue7106211/git-ascii",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "codex-0926-test",
+      "description": "Cloud Symphony - 动态云景网页，随机生成漂浮云朵动画效果",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-09-26T07:30:37Z",
+      "url": "https://github.com/xue7106211/codex-0926-test",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "codepen-scrollsplosion",
+      "description": "Scrollsplosion - 炫酷的滚动爆炸视觉效果 (源自 CodePen)",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-07-19T10:44:42Z",
+      "url": "https://github.com/xue7106211/codepen-scrollsplosion",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "baseui-scroll-area",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-07-19T10:33:56Z",
+      "url": "https://github.com/xue7106211/baseui-scroll-area",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "luxe-step-modal",
+      "description": "Luxe UI 步骤模态框组件演示，基于 Next.js + Tailwind CSS",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-07-19T10:28:46Z",
+      "url": "https://github.com/xue7106211/luxe-step-modal",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "bundui-fireworks",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-07-19T09:31:49Z",
+      "url": "https://github.com/xue7106211/bundui-fireworks",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "animations-trash",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2025-07-11T04:34:30Z",
+      "url": "https://github.com/xue7106211/animations-trash",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "figma-mcp-0708",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-07-08T10:31:10Z",
+      "url": "https://github.com/xue7106211/figma-mcp-0708",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "vapour-text-effect",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-07-08T07:29:50Z",
+      "url": "https://github.com/xue7106211/vapour-text-effect",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "text-shimmer",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 1,
+      "updated": "2025-07-08T03:25:44Z",
+      "url": "https://github.com/xue7106211/text-shimmer",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "react-travel-cursor",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-04-01T14:11:58Z",
+      "url": "https://github.com/xue7106211/react-travel-cursor",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "volume-dials",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-29T11:02:22Z",
+      "url": "https://github.com/xue7106211/volume-dials",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "react-travel",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2025-03-26T14:02:53Z",
+      "url": "https://github.com/xue7106211/react-travel",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "indev-sitecard",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-23T15:26:38Z",
+      "url": "https://github.com/xue7106211/indev-sitecard",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "unsplash",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-23T15:08:33Z",
+      "url": "https://github.com/xue7106211/unsplash",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "weather-api",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-23T14:14:47Z",
+      "url": "https://github.com/xue7106211/weather-api",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "db-waitlist",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-23T11:50:29Z",
+      "url": "https://github.com/xue7106211/db-waitlist",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "shadcn-ui",
+      "description": "",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-03-17T15:25:33Z",
+      "url": "https://github.com/xue7106211/shadcn-ui",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "tailwind-css-hero",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2025-03-17T14:18:46Z",
+      "url": "https://github.com/xue7106211/tailwind-css-hero",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "tailwindcss",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2025-03-17T10:21:38Z",
+      "url": "https://github.com/xue7106211/tailwindcss",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "password-tool",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2025-03-06T02:39:22Z",
+      "url": "https://github.com/xue7106211/password-tool",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "AI-Design",
+      "description": "AI编码模拟项目",
+      "language": "TypeScript",
+      "stars": 0,
+      "updated": "2025-02-21T04:33:39Z",
+      "url": "https://github.com/xue7106211/AI-Design",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "SVGTurn",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2024-12-16T02:16:37Z",
+      "url": "https://github.com/xue7106211/SVGTurn",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "cursor1117",
+      "description": "",
+      "language": "JavaScript",
+      "stars": 0,
+      "updated": "2024-11-17T02:44:24Z",
+      "url": "https://github.com/xue7106211/cursor1117",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "cursorTineLine",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2024-11-17T02:38:07Z",
+      "url": "https://github.com/xue7106211/cursorTineLine",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "cursor",
+      "description": "",
+      "language": "CSS",
+      "stars": 0,
+      "updated": "2024-11-16T14:33:55Z",
+      "url": "https://github.com/xue7106211/cursor",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "cards-carousel01",
+      "description": "",
+      "language": "SCSS",
+      "stars": 0,
+      "updated": "2024-11-13T02:25:16Z",
+      "url": "https://github.com/xue7106211/cards-carousel01",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "cards-carousel",
+      "description": "卡片横向滚动",
+      "language": "",
+      "stars": 0,
+      "updated": "2024-11-13T01:45:20Z",
+      "url": "https://github.com/xue7106211/cards-carousel",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "html",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2024-11-12T09:12:27Z",
+      "url": "https://github.com/xue7106211/html",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "kit-master-gitbook",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2022-12-01T08:16:05Z",
+      "url": "https://github.com/xue7106211/kit-master-gitbook",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "kit-master",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2022-12-01T08:11:48Z",
+      "url": "https://github.com/xue7106211/kit-master",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "design_token",
+      "description": "企业服务设计样式库",
+      "language": "",
+      "stars": 0,
+      "updated": "2022-10-20T05:56:08Z",
+      "url": "https://github.com/xue7106211/design_token",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "--",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2022-10-20T03:18:23Z",
+      "url": "https://github.com/xue7106211/--",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "designtoken",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2022-10-20T03:13:00Z",
+      "url": "https://github.com/xue7106211/designtoken",
+      "fork": false,
+      "portfolio_worthy": true
+    },
+    {
+      "name": "xue7106211",
+      "description": "Config files for my GitHub profile.",
+      "language": "",
+      "stars": 0,
+      "updated": "2021-11-05T07:32:35Z",
+      "url": "https://github.com/xue7106211/xue7106211",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "learngit",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2018-04-01T01:41:41Z",
+      "url": "https://github.com/xue7106211/learngit",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "xue7106211.github.io",
+      "description": "",
+      "language": "HTML",
+      "stars": 0,
+      "updated": "2018-03-31T15:04:57Z",
+      "url": "https://github.com/xue7106211/xue7106211.github.io",
+      "fork": false,
+      "portfolio_worthy": false
+    },
+    {
+      "name": "gitskills",
+      "description": "",
+      "language": "",
+      "stars": 0,
+      "updated": "2018-03-31T03:03:32Z",
+      "url": "https://github.com/xue7106211/gitskills",
+      "fork": false,
+      "portfolio_worthy": false
+    }
+  ],
+  "github_activity_notes": [
+    "User xue7106211: 88 public repos listed via search (2026-10-27).",
+    "Recent: allen-skills pushed 2026-10-27 (vendor interface-bts skill); design-token-viewer 2026-10-26; figma-token-organizer 2026-10-25; hyperos-design-system 2026-10-22.",
+    "GitHub commit author name often「薛困惑」/ allenxue."
+  ],
+  "meta": {
+    "assembled_at": "2026-10-27 Asia/Shanghai",
+    "policy": "Chinese wording from sources; English is faithful translation; empty rather than guess; see NOTES.md"
+  }
+}
