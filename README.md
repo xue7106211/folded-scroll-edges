@@ -29,6 +29,13 @@
 - 上下边缘各由 6 条细条带拼成，每条装一份 `aria-hidden` 的列表克隆，随滚动同步；条带按递增角度 `rotateX` 串接，近似出与着色器相同的圆柱卷曲，并用 `brightness` 模拟光照。
 - 访问 `?mode=css` 可在 Chrome 157+ 上强制查看降级模式。
 
+## 视觉风格：Caldera — Pixelated Cyber-Playground
+
+- 色板：Basalt Canvas `#e2e2df` 页面底、Ash White `#f7f6f2` 卡片、Abyssal Ink `#070607` 文字、Digital Orange `#fc5000` 主按钮与重点卡片、Cyber Violet `#524ae9` 仅用于装饰图形、Pixel Glare `#f5f28e` 高光。
+- 字体：标题 Bebas Neue（替代 PP Neue Corp Compact Ultrabold），中文回落 Noto Sans SC 900；正文 DM Sans 500。
+- 40px 卡片圆角、800px 胶囊按钮，扁平无阴影；Hero 背景是 `src/blobs.ts` 用低分辨率 canvas + Bayer 有序抖动生成的橙/紫像素团块。
+- 列表卡片本身就是 WebGL 纹理的来源，新样式会原样进入着色器（着色器底色同步为 `#e2e2df`）。
+
 ## 本地开发
 
 ```bash

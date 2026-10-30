@@ -1,5 +1,6 @@
 import './style.css'
-import { buildList } from './content'
+import { buildList, buildStats } from './content'
+import { drawBlobs } from './blobs'
 
 const stage = document.getElementById('stage')!
 const badge = document.getElementById('badge')!
@@ -92,8 +93,8 @@ void main(){
 }`
 const FS = `#version 300 es
 precision highp float; in vec2 vUv; in float vShade; uniform sampler2D uTex; out vec4 o;
-void main(){ vec4 t = texture(uTex, vUv); vec3 bg = vec3(0.055,0.055,0.063);
-  o = vec4(mix(bg, t.rgb, vShade * 0.85 + 0.15) * mix(0.55,1.0,vShade), 1.0); }`
+void main(){ vec4 t = texture(uTex, vUv); vec3 bg = vec3(0.886,0.886,0.875);
+  o = vec4(mix(bg, t.rgb, vShade * 0.85 + 0.15) * mix(0.72,1.0,vShade), 1.0); }`
 
 function startCanvas() {
   stage.innerHTML = ''
@@ -134,7 +135,7 @@ function startCanvas() {
     if (w !== tw || h !== th) { tw = w; th = h; gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null) }
     try { gl.texElementSubImage2D(gl.TEXTURE_2D, 0, 0, 0, list, { width: w, height: h }) } catch { return }
     gl.viewport(0, 0, canvas.width, canvas.height)
-    gl.clearColor(0.055, 0.055, 0.063, 1); gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.clearColor(0.886, 0.886, 0.875, 1); gl.clear(gl.COLOR_BUFFER_BIT)
     gl.uniform2f(uSize, W, H); gl.uniform1f(uFold, F); gl.uniform1f(uPersp, H * 1.6)
     gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0)
     // flat middle region is 1:1 with the DOM, so identity geometry keeps hit-testing / a11y aligned there
@@ -147,6 +148,8 @@ function startCanvas() {
   setBadge('canvas')
 }
 
+document.getElementById('stats')!.innerHTML = buildStats()
+drawBlobs(document.getElementById('blobs') as HTMLCanvasElement)
 if (forced !== 'css' && supportsHtmlInCanvas()) {
   try { startCanvas() } catch (e) { console.warn(e); startCss('（WebGL 初始化失败）') }
 } else startCss()
