@@ -11,7 +11,12 @@
 <title>Cylinder Scroll · 百年孤独</title>
 </head>
 <body>
-<canvas id="c" aria-label="纵向滚动的圆柱画廊，内容取自百年孤独"></canvas>
+<div class="stage">
+  <div class="overscroll-bg" aria-hidden="true"><span>Overscroll</span><span>Overscroll</span></div>
+  <div class="scroll-sheet" id="scroll-sheet">
+    <canvas id="c" aria-label="纵向滚动的圆柱画廊，内容取自百年孤独"></canvas>
+  </div>
+</div>
 <p id="fallback" hidden>需要 WebGL2 才能运行此演示。</p>
 <div class="bg-switch" role="group" aria-label="背景模式">
   <button type="button" data-bg="dark" aria-pressed="true">深色</button>

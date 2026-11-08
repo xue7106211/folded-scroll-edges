@@ -24,6 +24,13 @@ npm run pack:worker  # 把 dist/ 打成 Pages 用的 _worker.js
 ## 交互
 
 - 滚轮 / 纵向拖拽：绕 X 轴旋转（内容上下卷动）
+- 拉过起点 / 终点：iOS 式双曲阻尼回弹；露出灰白斜条纹与「Overscroll」
 - `prefers-reduced-motion: reduce`：关闭惯性，直接跟手
+- [/compare](/compare)：Most apps（1:1）vs iPhone（阻尼）对照与自动演示
+
+```bash
+npm test                 # 阻尼纯函数单元测试
+npm run record:artifacts # Playwright 390×844 录屏 / 截图 → artifacts/
+```
 
 需要 WebGL2；不支持时显示简短提示。
