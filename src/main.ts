@@ -1,5 +1,5 @@
 import './style.css'
-import { buildAtlas } from './atlas'
+import { createFeed } from './feed'
 import { createCylinder } from './cylinder'
 
 const canvas = document.getElementById('c') as HTMLCanvasElement
@@ -8,7 +8,7 @@ const fallback = document.getElementById('fallback') as HTMLParagraphElement
 const THEME_COLORS: Record<string, string> = {
   dark: '#070707',
   light: '#eceae4',
-  color: '#1a0f14',
+  color: '#141312',
 }
 
 function applyBg(mode: 'dark' | 'light' | 'color') {
@@ -43,7 +43,8 @@ initBgSwitch()
 
 async function waitFonts() {
   try {
-    await document.fonts.load('500 34px "Noto Sans SC"')
+    // 描述用 400、标题用 500，两档都要提前到位，否则 canvas 会用相近字重顶替
+    await Promise.all([document.fonts.load('400 12px "Noto Sans SC"'), document.fonts.load('500 34px "Noto Sans SC"')])
     await document.fonts.ready
   } catch {
     /* system Chinese fallback still works */
@@ -54,8 +55,9 @@ async function start() {
   await waitFonts()
 
   const dprCap = Math.min(window.devicePixelRatio || 1, 2)
-  const atlas = buildAtlas(dprCap)
-  const renderer = createCylinder(canvas, atlas)
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const feed = createFeed(reduceMotion)
+  const renderer = createCylinder(canvas, feed)
 
   if (!renderer) {
     canvas.hidden = true
@@ -63,7 +65,9 @@ async function start() {
     return
   }
 
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+  // 输入累积的“弧度”换算成列表滚动距离（内容 px），数值与旧版手感一致
+  const pxPerRot = 170
+  const clampRot = (r: number) => Math.min(Math.max(r, 0), feed.maxScroll() / pxPerRot)
 
   let targetRot = 0
   let rot = 0
@@ -73,7 +77,10 @@ async function start() {
   let lastT = 0
 
   const resize = () => {
-    renderer.resize(window.innerWidth, window.innerHeight, dprCap)
+    const panelCssW = renderer.resize(window.innerWidth, window.innerHeight, dprCap)
+    feed.resize(panelCssW, dprCap)
+    targetRot = clampRot(targetRot)
+    rot = clampRot(rot)
   }
   resize()
   addEventListener('resize', resize)
@@ -82,11 +89,11 @@ async function start() {
   const addDelta = (dy: number) => {
     const next = dy * 0.0042
     if (reduceMotion) {
-      targetRot += next
+      targetRot = clampRot(targetRot + next)
       rot = targetRot
       velocity = 0
     } else {
-      targetRot += next
+      targetRot = clampRot(targetRot + next)
       velocity += next * 0.35
     }
   }
@@ -132,14 +139,50 @@ async function start() {
   canvas.addEventListener('pointerup', endDrag)
   canvas.addEventListener('pointercancel', endDrag)
 
-  const tick = () => {
+  // 悬停倾斜：靠近光标的一侧微微抬向观者，并朝光标挪一点，像被轻轻吸住
+  const MAX_PITCH = (2 * Math.PI) / 180
+  const MAX_YAW = (3 * Math.PI) / 180
+  const PULL = 0.012 // 约 1% 面板宽
+  const TILT_TAU = 0.16 // 跟随的时间常数（秒），留一点滞后才有"被拉过去"的感觉
+  let aimX = 0
+  let aimY = 0
+  let hoverX = 0
+  let hoverY = 0
+  let lastFrame = performance.now()
+  const clamp1 = (v: number) => Math.min(1, Math.max(-1, v))
+  // 触屏没有悬停；减少动态时整段关闭
+  if (!reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return
+      aimX = clamp1((e.clientX / innerWidth) * 2 - 1)
+      aimY = clamp1(1 - (e.clientY / innerHeight) * 2)
+    })
+    const reset = () => {
+      aimX = 0
+      aimY = 0
+    }
+    document.documentElement.addEventListener('pointerleave', reset)
+    addEventListener('blur', reset)
+  }
+
+  const tick = (now: number) => {
+    const dt = Math.min(0.05, Math.max(0, (now - lastFrame) / 1000))
+    lastFrame = now
+    // 指数趋近，与帧率无关
+    const f = 1 - Math.exp(-dt / TILT_TAU)
+    hoverX += (aimX - hoverX) * f
+    hoverY += (aimY - hoverY) * f
+    renderer.setTilt(hoverY * MAX_PITCH, -hoverX * MAX_YAW, hoverX * PULL, hoverY * PULL)
     if (!dragging) {
       if (reduceMotion) {
         rot = targetRot
         velocity = 0
       } else {
         velocity *= 0.92
-        targetRot += velocity
+        const next = clampRot(targetRot + velocity)
+        // 撞到列表首尾时清掉惯性
+        if (next !== targetRot + velocity) velocity = 0
+        targetRot = next
         rot += (targetRot - rot) * 0.18
         if (Math.abs(velocity) < 1e-5 && Math.abs(targetRot - rot) < 1e-5) {
           velocity = 0
@@ -150,7 +193,7 @@ async function start() {
       rot += (targetRot - rot) * (reduceMotion ? 1 : 0.35)
     }
 
-    renderer.setRotation(rot)
+    if (feed.update(now, rot * pxPerRot)) renderer.upload()
     renderer.draw()
     requestAnimationFrame(tick)
   }

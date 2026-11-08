@@ -1,18 +1,16 @@
-import type { Atlas } from './atlas'
+import type { Feed } from './feed'
 
 const VS = `#version 300 es
 in vec3 aPos;
 in vec2 aUv;
 in float aShade;
 uniform mat4 uMVP;
-uniform float uScroll;
-uniform float uSpan;
 out vec2 vUv;
 out float vShade;
 out float vEdge; // 0 at panel rim → 1 in the middle (panel-local V)
 void main() {
-  // Panel covers only a slice of the tall atlas; scroll walks through it
-  vUv = vec2(aUv.x, aUv.y * uSpan + uScroll);
+  // 滚动已在 2D canvas 里完成，纹理恰好是一屏
+  vUv = aUv;
   vShade = aShade;
   // Soft vertical mask: fade out near top/bottom of the curved panel
   float feather = 0.22;
@@ -28,10 +26,9 @@ in float vEdge;
 uniform sampler2D uTex;
 out vec4 o;
 void main() {
+  // 纹理上传时已预乘 alpha，卡片外的透明区域直接透出页面背景
   vec4 t = texture(uTex, vUv);
-  float a = vEdge * vShade;
-  // Premultiply so transparent edges blend cleanly on any page background
-  o = vec4(t.rgb * a, a);
+  o = t * (vEdge * vShade);
 }`
 
 function compile(gl: WebGL2RenderingContext, type: number, src: string) {
@@ -170,15 +167,19 @@ function buildCurvedPanel(
 }
 
 export type CylinderRenderer = {
-  resize: (w: number, h: number, dpr: number) => void
-  setRotation: (rad: number) => void
+  /** 返回圆柱正面在屏幕上的宽度（CSS px） */
+  resize: (w: number, h: number, dpr: number) => number
+  /** 把 feed canvas 的最新画面同步到纹理 */
+  upload: () => void
+  /** 悬停倾斜：pitch 绕 X、yaw 绕 Y（弧度），dx / dy 为平移（面板宽 = 1） */
+  setTilt: (pitch: number, yaw: number, dx: number, dy: number) => void
   draw: () => void
   destroy: () => void
 }
 
 export function createCylinder(
   canvas: HTMLCanvasElement,
-  atlas: Atlas,
+  feed: Pick<Feed, 'canvas' | 'pageAspect'>,
 ): CylinderRenderer | null {
   const gl = canvas.getContext('webgl2', {
     alpha: true,
@@ -198,7 +199,7 @@ export function createCylinder(
   // large arc → top/bottom curl away with clear foreshortening.
   const panelWidth = 1.0
   const arc = (128 * Math.PI) / 180
-  const arcLen = panelWidth / atlas.pageAspect
+  const arcLen = panelWidth / feed.pageAspect
   const radius = arcLen / arc
   const geo = buildCurvedPanel(48, 120, radius, panelWidth, arc)
   const vao = gl.createVertexArray()!
@@ -233,24 +234,36 @@ export function createCylinder(
   gl.bindTexture(gl.TEXTURE_2D, tex)
   // Canvas origin is top-left; leave unflipped and map UV so v=0 is canvas top
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0)
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  // 正面纹理与屏幕 1:1；上下卷走的部分被压缩，用 mipmap + 各向异性过滤避免文字闪烁
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas.canvas)
+  const aniso = gl.getExtension('EXT_texture_filter_anisotropic')
+  if (aniso) {
+    const max = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT) as number
+    gl.texParameterf(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, max))
+  }
+  let texW = 0
+  let texH = 0
 
   const uMVP = gl.getUniformLocation(program, 'uMVP')
   const uTex = gl.getUniformLocation(program, 'uTex')
-  const uScroll = gl.getUniformLocation(program, 'uScroll')
-  const uSpan = gl.getUniformLocation(program, 'uSpan')
 
-  const span = atlas.span
-  let scroll = 0
   let viewW = 1
   let viewH = 1
+  let model = IDENTITY
   let proj = perspective(Math.PI / 2.55, 1, 0.1, 20)
   // Slightly elevated; pull back a touch so the +40% taller page still fits
   const view = lookAt([0, 0.1, 2.7], [0, -0.02, radius * 0.5], [0, 1, 0])
+
+  /** 正面（angle = 0）这一行在 NDC 里的 x 坐标 */
+  const frontNdcX = (mvp: Float32Array, px: number) => {
+    const x = mvp[0] * px + mvp[8] * radius + mvp[12]
+    const w = mvp[3] * px + mvp[11] * radius + mvp[15]
+    return x / w
+  }
 
   gl.enable(gl.DEPTH_TEST)
   gl.disable(gl.CULL_FACE)
@@ -271,13 +284,38 @@ export function createCylinder(
       viewH = h
       proj = perspective(Math.PI / 2.55, w / h, 0.1, 20)
       gl.viewport(0, 0, w, h)
+      const mvp = multiply(proj, view)
+      const ndcW = frontNdcX(mvp, panelWidth / 2) - frontNdcX(mvp, -panelWidth / 2)
+      return (ndcW / 2) * cssW
     },
-    setRotation(rad) {
-      // Drag/wheel accumulate "radians"; convert to atlas UV travel
-      scroll = rad * 0.08
+    upload() {
+      const src = feed.canvas
+      gl.bindTexture(gl.TEXTURE_2D, tex)
+      // 尺寸变了要重新分配；否则只覆盖像素
+      if (src.width !== texW || src.height !== texH) {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src)
+        texW = src.width
+        texH = src.height
+      } else {
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src)
+      }
+      gl.generateMipmap(gl.TEXTURE_2D)
+    },
+    setTilt(pitch, yaw, dx, dy) {
+      // 以正面中点 (0, 0, radius) 为轴心：绕圆柱轴本身转 X 看起来会像在滚动
+      // model = T(dx, dy, r) · Ry(yaw) · Rx(pitch) · T(0, 0, -r)
+      const cx = Math.cos(pitch), sx = Math.sin(pitch)
+      const cy = Math.cos(yaw), sy = Math.sin(yaw)
+      const r = radius
+      model = new Float32Array([
+        cy, 0, -sy, 0,
+        sy * sx, cx, cy * sx, 0,
+        sy * cx, -sx, cy * cx, 0,
+        dx - r * sy * cx, dy + r * sx, r - r * cy * cx, 1,
+      ])
     },
     draw() {
-      const mvp = multiply(proj, multiply(view, IDENTITY))
+      const mvp = multiply(proj, multiply(view, model))
       gl.viewport(0, 0, viewW, viewH)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.useProgram(program)
@@ -285,8 +323,6 @@ export function createCylinder(
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, tex)
       gl.uniform1i(uTex, 0)
-      gl.uniform1f(uScroll, scroll)
-      gl.uniform1f(uSpan, span)
       gl.uniformMatrix4fv(uMVP, false, mvp)
       gl.drawElements(gl.TRIANGLES, geo.indices.length, gl.UNSIGNED_SHORT, 0)
     },
