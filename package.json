@@ -1,3 +1,25 @@
-{ "name": "folded-scroll-edges", "private": true, "type": "module",
-  "scripts": { "dev": "vite", "build": "tsc --noEmit && vite build", "pack:worker": "node scripts/build-pages-worker.mjs" },
-  "devDependencies": { "typescript": "^5.6.0", "vite": "^6.0.0" } }
+{
+  "name": "folded-scroll-edges",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "卧式圆柱上的 WebGL2 通知列表组件，零运行时依赖",
+  "module": "./dist-lib/cylinder-feed.js",
+  "types": "./dist-lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist-lib/types/index.d.ts",
+      "import": "./dist-lib/cylinder-feed.js"
+    }
+  },
+  "files": ["dist-lib"],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "prepack": "npm run build:lib",
+    "pack:worker": "node scripts/build-pages-worker.mjs"
+  },
+  "devDependencies": { "typescript": "^5.6.0", "vite": "^6.0.0" }
+}
