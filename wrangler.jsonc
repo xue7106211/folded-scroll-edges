@@ -19,5 +19,8 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  // PR 等非生产分支的部署命令是 `npx wrangler preview`，它要求有这个块，空的即可；
+  // assets、compatibility 等设置留在顶层，不用复制进来
+  "previews": {}
 }
