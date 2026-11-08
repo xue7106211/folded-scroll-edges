@@ -26,5 +26,5 @@
   - `npm test` → 12 passed
   - `npm run build` → `dist/index.html` + `dist/compare.html` + `dist/_redirects`
   - `npm run deploy:dry-run` → wrangler 4.158.0, no interactive scaffold, no source mutation
-  - `npm run verify:deploy-local` → `/` 200 home; `/compare` 200 compare; `/compare/` 308 → `/compare`; unknown 404 (no homepage SPA fallback); screenshots under `/opt/cursor/artifacts/deploy_local_*.png`
+  - `npm run verify:deploy-local` → `/` 200 home; `/compare` 200 compare; `/compare/` 308 → `/compare`; unknown 404 (no homepage SPA fallback); screenshots under `artifacts/deploy_local_*.png` (optionally also copied to `$VERIFY_ARTIFACTS_DIR`)
 - **Still missing:** real remote Workers Builds / production deploy verification (intentionally not run; no credentials required for this fix).
