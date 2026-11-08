@@ -1,0 +1,26 @@
+/**
+ * Cloudflare Workers Builds：只托管静态资源，Wrangler 直接发布 `npm run build` 产出的 ./dist。
+ *
+ * 必须提交这份配置。缺了它，Workers Builds 会自动搭脚手架：安装 @cloudflare/vite-plugin
+ * 并改写 vite 配置，然后报 "could not find a valid plugins array" 失败（见提交 904ab54）。
+ * 组件库产物 dist-lib/ 不参与部署。Pages 直传仍可用 `npm run pack:worker`。
+ */
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "folded-scroll-edges",
+  "compatibility_date": "2026-11-08",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    // 只有一个页面，未知路径返回 404，不回退到首页
+    "not_found_handling": "none"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // PR 等非生产分支的部署命令是 `npx wrangler preview`，它要求有这个块，空的即可；
+  // assets、compatibility 等设置留在顶层，不用复制进来
+  "previews": {}
+}

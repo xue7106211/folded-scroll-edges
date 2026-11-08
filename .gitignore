@@ -1,4 +1,7 @@
 node_modules
 dist
+dist-lib
+.wrangler
+.dev.vars*
 pages-worker.js
 pages-worker-meta.json

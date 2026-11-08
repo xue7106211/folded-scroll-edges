@@ -49,6 +49,47 @@
   }
 }
 
+/* 面板用实色的三档文字，不靠透明度叠加 */
+:root,
+[data-bg='dark'] {
+  --panel-w: 288px;
+  --panel-text: #ededed;
+  --panel-secondary: #a1a1a6;
+  --panel-muted: #85858b;
+  --panel-track: rgb(237 237 237 / 0.18);
+  --panel-hover: #2c2c2f;
+  --panel-mark: #e0644a;
+}
+
+[data-bg='light'] {
+  --panel-text: #1a1a1a;
+  --panel-secondary: #57534e;
+  --panel-muted: #78716c;
+  --panel-track: rgb(26 26 26 / 0.16);
+  --panel-hover: #fafaf8;
+  --panel-mark: #c2452d;
+}
+
+[data-bg='color'] {
+  --panel-text: #efe9de;
+  --panel-secondary: #aaa398;
+  --panel-muted: #8a847a;
+  --panel-track: rgb(239 233 222 / 0.18);
+  --panel-hover: #36322e;
+  --panel-mark: #e0644a;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-bg]) {
+    --panel-text: #1a1a1a;
+    --panel-secondary: #57534e;
+    --panel-muted: #78716c;
+    --panel-track: rgb(26 26 26 / 0.16);
+    --panel-hover: #fafaf8;
+    --panel-mark: #c2452d;
+  }
+}
+
 html,
 body {
   width: 100%;
@@ -79,33 +120,17 @@ html[data-bg='color'] body::before {
   opacity: 1;
 }
 
-#c {
+/* 组件自带上下渐隐遮罩、光标和触控设置，这里只给尺寸 */
+#app {
   position: relative;
   z-index: 1;
-  display: block;
   width: 100%;
   height: 100%;
-  touch-action: none;
-  cursor: grab;
-  /* Extra CSS mask: fades canvas into any page background (dark / light / color) */
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    #000 14%,
-    #000 86%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    #000 14%,
-    #000 86%,
-    transparent 100%
-  );
 }
 
-#c:active {
-  cursor: grabbing;
+#app:focus-visible {
+  outline: 2px solid var(--page-fg);
+  outline-offset: -4px;
 }
 
 .bg-switch {
@@ -155,18 +180,320 @@ html[data-bg='color'] body::before {
   opacity: 1;
 }
 
-#fallback {
+/* 演示页参数面板：浮在右上角，内容过长时面板内部滚动，按钮区固定在底部 */
+.panel {
   position: fixed;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 32px;
-  font-size: 14px;
-  opacity: 0.7;
+  z-index: 3;
+  top: 16px;
+  right: 16px;
+  width: var(--panel-w);
+  max-height: calc(100% - 96px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--panel-text);
+  font-size: 12px;
+  line-height: 16px;
 }
 
-#fallback[hidden] {
+.panel[data-open='false'] {
+  width: auto;
+}
+
+.panel[data-open='true'] .panel-head {
+  border-bottom: 1px solid var(--chip-border);
+  border-radius: 16px 16px 0 0;
+}
+
+.panel-head {
+  appearance: none;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.panel-head svg {
+  color: var(--panel-muted);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel[data-open='false'] .panel-head svg {
+  transform: rotate(90deg);
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+
+.panel-foot {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--chip-border);
+}
+
+.panel[data-open='false'] :is(.panel-body, .panel-foot) {
   display: none;
+}
+
+/* 组内 8、组间 24，靠留白分组，不用分隔线 */
+.panel-group + .panel-group {
+  margin-top: 24px;
+}
+
+.panel-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.panel-group h3 {
+  font: inherit;
+  font-weight: 500;
+}
+
+.panel-note {
+  margin-bottom: 4px;
+  color: var(--panel-muted);
+}
+
+.panel-row {
+  --row-fg: var(--panel-secondary);
+  --row-ink: var(--panel-text);
+  display: grid;
+  grid-template-columns: 64px 1fr 56px;
+  align-items: center;
+  column-gap: 12px;
+  height: 32px;
+}
+
+.panel-row.is-toggle {
+  grid-template-columns: 1fr auto;
+}
+
+.panel-row.is-off {
+  --row-fg: var(--panel-muted);
+  --row-ink: var(--panel-muted);
+}
+
+.panel-row label {
+  color: var(--row-fg);
+  white-space: nowrap;
+}
+
+/* 数值像标注稿上的尺寸：等宽数字、右对齐成一列 */
+.panel-value {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 24px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--row-fg);
+  font: 12px/16px ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.panel-row.is-changed:not(.is-off) .panel-value {
+  color: var(--panel-text);
+  cursor: pointer;
+}
+
+.panel-row.is-changed:not(.is-off) .panel-value:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.panel-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 改过的参数前的红点，对应“复制配置”只输出改动字段 */
+.panel-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--panel-mark);
+  opacity: 0;
+  transition: opacity 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.is-changed .panel-dot {
+  opacity: 1;
+}
+
+.panel input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.panel input[type='range']:disabled {
+  cursor: default;
+}
+
+.panel input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(to right, var(--row-ink) var(--p, 0%), var(--panel-track) var(--p, 0%));
+}
+
+.panel input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border-radius: 6px;
+  background: var(--row-ink);
+  box-shadow: 0 0 0 2px var(--chip-bg);
+}
+
+.panel input[type='range']::-moz-range-track {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--panel-track);
+}
+
+.panel input[type='range']::-moz-range-progress {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--row-ink);
+}
+
+.panel input[type='range']::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--row-ink);
+  box-shadow: 0 0 0 2px var(--chip-bg);
+}
+
+.panel-switch {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 16px;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--panel-track);
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--chip-bg);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-switch:checked {
+  background: var(--panel-text);
+}
+
+.panel-switch:checked::after {
+  transform: translateX(12px);
+}
+
+.panel-foot button {
+  appearance: none;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--panel-text);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-foot .is-secondary {
+  background: var(--chip-active);
+  border-color: var(--chip-border);
+}
+
+.panel-foot .is-secondary:hover {
+  background: var(--panel-hover);
+}
+
+.panel-foot .is-quiet {
+  color: var(--panel-secondary);
+}
+
+.panel-foot .is-quiet:hover {
+  color: var(--panel-text);
+}
+
+.panel-foot .is-primary {
+  background: var(--panel-text);
+  color: var(--chip-bg);
+  font-weight: 500;
+}
+
+.panel-foot .is-primary:active,
+.panel-foot .is-secondary:active {
+  transform: scale(0.98);
+}
+
+.panel :is(button, input):focus-visible {
+  outline: 2px solid var(--panel-text);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .panel {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .panel[data-open='false'] {
+    left: auto;
+  }
 }
