@@ -136,7 +136,10 @@ npm run dev          # 演示页
 npm run build        # 演示页构建到 dist/
 npm run build:lib    # 组件库构建到 dist-lib/
 npm run pack:worker  # 把 dist/ 打成 Pages 用的 worker
+npm run deploy:dry-run  # 本地模拟 Workers Builds 的发布打包，不需要凭据
 ```
+
+推送后 Cloudflare Workers Builds 会按 `wrangler.jsonc` 把 `dist/` 作为静态资源发布。这份配置必须保留在仓库里，否则构建会自动搭 Vite 插件脚手架并失败。
 
 - `src/lib/`：组件本体，`index.ts` 是公开入口。`core.ts` 负责输入、主循环、observer 和事件，`painter.ts` 用 2D canvas 画卡片和 spring 动画，`renderer.ts` 负责 WebGL2 圆柱和拾取，`element.ts` 是 Web Component。
 - `src/main.ts`：演示页，只通过公开 API 使用组件。`src/panel.ts` 是演示页右上角的参数面板，可以实时调节各项配置，并复制出对应的 `createCylinderFeed` 代码。
