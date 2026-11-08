@@ -1,0 +1,3 @@
+# Ensure /compare/ resolves to the compare page (not homepage).
+# html_handling also covers /compare → compare.html; this is a belt-and-suspenders rule.
+/compare/ /compare 308

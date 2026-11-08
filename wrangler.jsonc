@@ -1,0 +1,32 @@
+/**
+ * Cloudflare Workers (Git / Workers Builds) — assets-only static site.
+ *
+ * This repo is a multi-page Vite build (`index.html` + `compare.html`), not an SPA.
+ * We intentionally do NOT use `@cloudflare/vite-plugin`: Wrangler serves `./dist`
+ * after `npm run build`. An explicit config also stops Workers Builds from running
+ * interactive/CI scaffolding that mutates vite.config and fails with
+ * "could not find a valid plugins array".
+ *
+ * Pages direct-upload remains available via `npm run pack:worker` (pages-worker.js).
+ */
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "folded-scroll-edges",
+  "compatibility_date": "2026-11-08",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    // Map /compare → compare.html; trailing-slash requests redirect appropriately.
+    "html_handling": "auto-trailing-slash",
+    // Do NOT use "single-page-application": unknown paths must not fall back to homepage
+    // (would make /compare mistakes serve index.html).
+    "not_found_handling": "none"
+  },
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  }
+}

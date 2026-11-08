@@ -34,6 +34,10 @@ const types = {
 const files = walk(dist)
 const entries = []
 for (const rel of files) {
+  // Cloudflare metadata files are for platform routing, not app assets.
+  // Pages pack:worker already implements /compare in fetch(); skip embedding them.
+  const base = rel.split('/').pop()
+  if (base === '_redirects' || base === '_headers') continue
   const buf = fs.readFileSync(path.join(dist, rel))
   const gz = zlib.gzipSync(buf, { level: 9 })
   const key = '/' + rel
