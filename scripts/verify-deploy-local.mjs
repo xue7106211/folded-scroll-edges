@@ -14,9 +14,10 @@ import { chromium } from 'playwright'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = path.join(root, 'artifacts')
-const optArtifacts = '/opt/cursor/artifacts'
+// Optional extra destination for screenshots (e.g. a CI/agent artifacts dir).
+const extraArtifacts = process.env.VERIFY_ARTIFACTS_DIR || ''
 fs.mkdirSync(outDir, { recursive: true })
-fs.mkdirSync(optArtifacts, { recursive: true })
+if (extraArtifacts) fs.mkdirSync(extraArtifacts, { recursive: true })
 
 function run(cmd, args, opts = {}) {
   return new Promise((resolve, reject) => {
@@ -44,10 +45,14 @@ function run(cmd, args, opts = {}) {
 }
 
 function copyArtifact(src, name) {
-  const dest = path.join(optArtifacts, name)
-  fs.copyFileSync(src, dest)
-  fs.copyFileSync(src, path.join(outDir, name))
-  console.log('artifact', dest)
+  const local = path.join(outDir, name)
+  if (path.resolve(src) !== path.resolve(local)) fs.copyFileSync(src, local)
+  console.log('artifact', local)
+  if (extraArtifacts) {
+    const dest = path.join(extraArtifacts, name)
+    fs.copyFileSync(src, dest)
+    console.log('artifact', dest)
+  }
 }
 
 // --- Guard: vite.config must remain free of Cloudflare plugin scaffolding ---
@@ -92,15 +97,6 @@ const onData = (buf) => {
 }
 wrangler.stdout.on('data', onData)
 wrangler.stderr.on('data', onData)
-
-const started = Date.now()
-while (!ready && Date.now() - started < 45000) {
-  await new Promise((r) => setTimeout(r, 200))
-  if (wrangler.exitCode != null) {
-    throw new Error(`wrangler exited early: ${wrangler.exitCode}\n${bootLog.join('')}`)
-  }
-}
-if (!ready) throw new Error(`wrangler did not become ready\n${bootLog.join('')}`)
 
 const base = `http://127.0.0.1:${port}`
 
@@ -148,6 +144,15 @@ async function check(pathname, expect) {
 }
 
 try {
+  const started = Date.now()
+  while (!ready && Date.now() - started < 45000) {
+    await new Promise((r) => setTimeout(r, 200))
+    if (wrangler.exitCode != null) {
+      throw new Error(`wrangler exited early: ${wrangler.exitCode}\n${bootLog.join('')}`)
+    }
+  }
+  if (!ready) throw new Error(`wrangler did not become ready\n${bootLog.join('')}`)
+
   await check('/', {
     status: 200,
     isHome: true,
