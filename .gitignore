@@ -2,3 +2,5 @@ node_modules
 dist
 pages-worker.js
 pages-worker-meta.json
+artifacts
+artifacts/video-tmp

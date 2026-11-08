@@ -74,8 +74,10 @@ export default {
     const url = new URL(request.url);
     let p = url.pathname;
     if (p === '/') p = '/index.html';
+    else if (p === '/compare' || p === '/compare/') p = '/compare.html';
     let file = FILES[p];
     if (!file) {
+      // Unknown paths fall back to the home page (static hosting convention).
       file = FILES['/index.html'];
       if (!file) return new Response('Not Found', { status: 404 });
     }

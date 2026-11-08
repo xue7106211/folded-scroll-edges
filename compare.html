@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="color-scheme" content="light" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+<title>Overscroll Compare · Most apps vs iPhone</title>
+</head>
+<body class="compare-page">
+<main class="compare" data-demo-state="booting">
+  <div class="compare-phones">
+    <section class="phone-col" data-side="linear">
+      <p class="phone-label">Most apps</p>
+      <div class="phone-card">
+        <div class="overscroll-bg" aria-hidden="true"><span>Overscroll</span><span>Overscroll</span></div>
+        <div class="scroll-sheet">
+          <canvas class="phone-canvas" id="c-linear" aria-label="Cylinder scroll without damping"></canvas>
+        </div>
+        <div class="touch-dot" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M12 5l-5 5M12 5l5 5"/></svg>
+        </div>
+      </div>
+      <div class="formula formula-bad" data-formula="linear" hidden>
+        <span class="formula-mark" aria-hidden="true">✗</span>
+        <code>offset = x</code>
+      </div>
+    </section>
+
+    <section class="phone-col" data-side="damped">
+      <p class="phone-label">iPhone</p>
+      <div class="phone-card">
+        <div class="overscroll-bg" aria-hidden="true"><span>Overscroll</span><span>Overscroll</span></div>
+        <div class="scroll-sheet">
+          <canvas class="phone-canvas" id="c-damped" aria-label="Cylinder scroll with iOS damping"></canvas>
+        </div>
+        <div class="touch-dot" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M12 5l-5 5M12 5l5 5"/></svg>
+        </div>
+      </div>
+      <div class="formula formula-good" data-formula="damped" hidden>
+        <span class="formula-mark" aria-hidden="true">✓</span>
+        <code>offset = (1 - (1 / (c * x / d + 1))) * d</code>
+        <p class="formula-legend">x = finger pull &nbsp;/&nbsp; d = screen height &nbsp;/&nbsp; c = 0.55</p>
+      </div>
+    </section>
+  </div>
+
+  <p class="caption" id="caption" aria-live="polite"></p>
+  <button type="button" class="replay" id="replay" hidden>Replay</button>
+</main>
+<p id="fallback" hidden>WebGL2 is required for this demo.</p>
+<script type="module" src="/src/compare.ts"></script>
+</body>
+</html>
