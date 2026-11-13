@@ -14,8 +14,10 @@ import {
   type ThemePreset,
 } from './lib'
 import { createPanel, type Group } from './panel'
+import { mountScroll } from './scroll'
 
 type Bg = 'dark' | 'light' | 'color'
+type View = 'feed' | 'scroll'
 
 // 底块是一组压暗的印刷色卡色，白色图形在每块上的对比度都 ≥ 3.8:1
 // 新条目插在顶部、按数组顺序循环，所以从旧到新排，列表从上往下读才是越来越早
@@ -248,17 +250,52 @@ document.body.append(panel.element)
 function applyBg(mode: Bg) {
   bg = mode
   document.documentElement.dataset.bg = mode
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[mode])
+  syncThemeColor()
   document.querySelectorAll<HTMLButtonElement>('.bg-switch [data-bg]').forEach((btn) => {
     btn.setAttribute('aria-pressed', String(btn.dataset.bg === mode))
   })
   feed.setTheme(FEED_THEME[mode])
 }
-applyBg(bg)
 
 document.querySelector('.bg-switch')?.addEventListener('click', (e) => {
   const mode = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-bg]')?.dataset.bg
   if (!isBg(mode)) return
   localStorage.setItem('cyl-bg', mode)
   applyBg(mode)
+})
+
+// ---- 展示样式：通知 / 手卷 ----
+// 两个实例各占一个容器，切走的那个 display: none，组件的 IntersectionObserver 会停掉它的渲染循环，
+// 切回来时滚动位置和条目都还在。手卷第一次切过去才创建，不用的人不多开一个 GL 上下文
+const isView = (v: unknown): v is View => v === 'feed' || v === 'scroll'
+const savedView = localStorage.getItem('cyl-view')
+let view: View = isView(savedView) ? savedView : 'feed'
+const scrollEl = document.getElementById('scroll')!
+let scrollFeed: ReturnType<typeof mountScroll> | null = null
+
+function syncThemeColor() {
+  const color = view === 'scroll' ? '#ece6d8' : THEME_COLORS[bg]
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+}
+
+function applyView(next: View) {
+  view = next
+  document.documentElement.dataset.view = next
+  app.hidden = next !== 'feed'
+  scrollEl.hidden = next !== 'scroll'
+  if (next === 'scroll' && !scrollFeed) scrollFeed = mountScroll(scrollEl, document.getElementById('scroll-meta')!)
+  document.querySelectorAll<HTMLButtonElement>('.dock [data-view]').forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.view === next))
+  })
+  syncThemeColor()
+}
+
+applyView(view)
+applyBg(bg)
+
+document.querySelector('.dock')?.addEventListener('click', (e) => {
+  const next = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-view]')?.dataset.view
+  if (!isView(next) || next === view) return
+  localStorage.setItem('cyl-view', next)
+  applyView(next)
 })
