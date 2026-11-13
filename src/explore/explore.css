@@ -1,0 +1,202 @@
+/* 探索页共用：整屏一个圆柱，左上导航，左下一句说明，右下状态。每页用 html[data-page] 定色调 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0b0b0c;
+  --fg: #ededed;
+  --fg-2: #a1a1a6;
+  --fg-3: #85858b;
+  --line: rgb(237 237 237 / 0.08);
+  --mark: #e0644a;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+
+/* 手卷：生宣纸色，墨色字，朱印 */
+[data-page='scroll'] {
+  --bg: #ece6d8;
+  --fg: #2a2622;
+  --fg-2: #5e564c;
+  --fg-3: #756c61;
+  --line: rgb(42 38 34 / 0.1);
+  --mark: #a8321e;
+  color-scheme: light;
+}
+
+/* 节气：夜里的灰，金色只标“此刻” */
+[data-page='loop'] {
+  --bg: #0e1013;
+  --fg: #e8e6e1;
+  --fg-2: #a3a39e;
+  --fg-3: #85857f;
+  --line: rgb(232 230 225 / 0.08);
+  --mark: #d9a441;
+}
+
+/* 呼吸：更深、更暖的暗 */
+[data-page='breath'] {
+  --bg: #0d0c0b;
+  --fg: #ebe5da;
+  --fg-2: #a69f94;
+  --fg-3: #877f75;
+  --line: rgb(235 229 218 / 0.08);
+  --mark: #c9a56a;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+}
+
+.stage:focus-visible {
+  outline: 2px solid var(--fg-3);
+  outline-offset: -4px;
+}
+
+.nav {
+  position: fixed;
+  z-index: 2;
+  top: 20px;
+  left: 24px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.nav a {
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--fg-3);
+  text-decoration: none;
+  transition:
+    color 160ms var(--ease),
+    background-color 160ms var(--ease);
+}
+
+.nav a:hover,
+.nav a[aria-current='page'] {
+  color: var(--fg);
+}
+
+.nav a[aria-current='page'] {
+  background: var(--line);
+}
+
+.nav a:focus-visible,
+.meta button:focus-visible {
+  outline: 2px solid var(--fg-3);
+  outline-offset: 0;
+}
+
+.nav .sep {
+  width: 1px;
+  height: 12px;
+  margin: 0 4px;
+  background: var(--line);
+}
+
+.caption {
+  position: fixed;
+  z-index: 2;
+  left: 24px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  max-width: 280px;
+  color: var(--fg-3);
+  pointer-events: none;
+}
+
+.caption strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--fg-2);
+  font-weight: 500;
+}
+
+.meta {
+  position: fixed;
+  z-index: 2;
+  right: 24px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  color: var(--fg-3);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  pointer-events: none;
+}
+
+.meta button {
+  display: block;
+  margin: 8px 0 0 auto;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg-2);
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 160ms var(--ease);
+}
+
+.meta button:hover {
+  color: var(--fg);
+}
+
+/* 呼吸引导：一条随呼吸伸缩的细线 */
+.guide {
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: 160px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.guide-line {
+  width: 100%;
+  height: 1px;
+  background: var(--fg-2);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.guide-label {
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .nav {
+    top: 16px;
+    left: 16px;
+    flex-wrap: wrap;
+  }
+  .caption {
+    display: none;
+  }
+  .meta {
+    right: 16px;
+  }
+}

@@ -83,6 +83,7 @@ export const defaultCylinder: CylinderOptions = {
   shadeMin: 0.18,
   edgeFade: 0.14,
   maxDpr: 2,
+  loop: false,
 }
 
 // wheelSpeed / dragSpeed 由旧版“弧度 × 170”的手感换算而来

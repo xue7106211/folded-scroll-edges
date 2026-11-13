@@ -21,6 +21,7 @@ The component lives in `src/lib/` (public entry `index.ts`, built with `npm run 
 - `src/lib/types.ts` is the public contract; `defaults.ts` holds presets (`dark` / `light` / `warm`) and defaults; `icons.ts` holds the Phosphor duotone paths (MIT, credit kept in comments and README).
 - Demo content (`NOTICES`, Chinese, design-collaboration theme) lives in `src/main.ts`. The demo maps `html[data-bg]` (`dark` / `light` / `color`, saved in `localStorage['cyl-bg']`) to feed themes with `feed.setTheme()`.
 - `src/panel.ts` is the demo-only settings panel (open state in `localStorage['cyl-panel']`). It floats over the top-right corner (the user prefers this to a docked sidebar); long content scrolls inside it and the action buttons stay pinned at the bottom. Each control maps to one option section in `main.ts` (`GROUPS`); live sections go through `feed.setOptions()`, while `cylinder` changes destroy and recreate the instance on slider release, keeping items and scroll. A red dot marks values that differ from `DEFAULTS`, and clicking the value resets it, which matches what "复制配置" outputs.
+- `explore/*.html` + `src/explore/*.ts` are four exploration demos (手卷 / 无常 / 节气 / 呼吸), registered as extra inputs in `vite.config.ts`. They use only the public API; per-page colors live in `src/explore/explore.css` under `html[data-page]`. `cylinder.loop` renders the panel as a closed 360° cylinder: the painter wraps content modulo the item period, and the renderer fades the back half to 0 so mirrored text never shows through card gaps.
 
 ## Gotchas
 

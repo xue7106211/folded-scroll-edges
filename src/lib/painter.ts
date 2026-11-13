@@ -17,11 +17,16 @@ export type Painter<T extends FeedItem> = {
   /** 动画是否还没停 */
   busy: () => boolean
   push: (item: T, animate: boolean) => void
+  remove: (item: T, animate: boolean) => boolean
   setItems: (items: T[]) => void
   items: () => T[]
   itemAt: (index: number) => T | null
   /** 卡片位置的身份标识。同一个条目对象可能出现在多张卡片上，悬停判断要比这个 */
   slotKey: (index: number) => object | null
+  /** 让第 index 条落在正面中央的滚动值；loop 模式下取离 from 最近的那一圈 */
+  scrollForIndex: (index: number, from: number) => number
+  /** 正面中央最近的条目下标 */
+  centerIndex: (scroll: number) => number
   setTheme: (theme: FeedTheme) => void
   setLayout: (layout: FeedLayout) => void
   setSpring: (stiffness: number, damping: number) => void
@@ -35,7 +40,10 @@ export type Painter<T extends FeedItem> = {
 }
 
 const PAGE_ASPECT = 1 / 1.4
+// 闭合圆柱的周长取 3.2 倍面板宽：半径约 0.51，正面大小接近普通模式
+const LOOP_ASPECT = 1 / 3.2
 const MAX_TEX_W = 2048
+const MAX_TEX_H = 4096
 const TITLE_LH = 20
 const DESC_LH = 18
 const TEXT_GAP = 2
@@ -67,17 +75,20 @@ export function createPainter<T extends FeedItem>(init: {
   spring: { stiffness: number; damping: number }
   maxItems: number
   feather: number
+  loop?: boolean
   renderItem?: RenderItem<T>
 }): Painter<T> {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')!
+  const loop = init.loop ?? false
+  const aspect = loop ? LOOP_ASPECT : PAGE_ASPECT
   let L = init.layout
   let theme = init.theme
   let { stiffness, damping } = init.spring
   let maxItems = init.maxItems
   let renderItem = init.renderItem
   let contentW = L.minWidth
-  let viewHeight = contentW / PAGE_ASPECT
+  let viewHeight = contentW / aspect
   let padTop = 0
   let k = 1
   let slots: Slot<T>[] = []
@@ -88,6 +99,8 @@ export function createPainter<T extends FeedItem>(init: {
   let animating = false
 
   const slotH = () => L.itemHeight + L.gap
+  const period = () => slots.length * slotH()
+  const mod = (a: number, b: number) => ((a % b) + b) % b
   const cardW = () => Math.min(contentW - L.sidePadding * 2, L.cardMaxWidth)
   const settle = () => slots.forEach((s, i) => ((s.y = i * slotH()), (s.vy = 0), (s.s = 1), (s.vs = 0)))
 
@@ -99,12 +112,14 @@ export function createPainter<T extends FeedItem>(init: {
   const resize = (panelCssW: number, dpr: number) => {
     // 面板够宽时 1:1 显示；太窄时整体等比缩小，避免标题被截掉太多
     contentW = Math.max(panelCssW, L.minWidth)
-    viewHeight = contentW / PAGE_ASPECT
-    // 留出比羽化区略多的空白，首尾卡片才能滚到正面
-    padTop = Math.round(viewHeight * (init.feather + 0.04))
+    viewHeight = contentW / aspect
+    // 留出比羽化区略多的空白，首尾卡片才能滚到正面；闭合圆柱没有首尾
+    padTop = loop ? 0 : Math.round(viewHeight * (init.feather + 0.04))
     // 纹理像素与正面的设备像素 1:1，文字不经过缩放采样
-    const w = Math.round(Math.min(MAX_TEX_W, Math.max(256, panelCssW * dpr)))
-    const h = Math.round(w / PAGE_ASPECT)
+    let w = Math.round(Math.min(MAX_TEX_W, Math.max(256, panelCssW * dpr)))
+    // 闭合圆柱的纹理很高，超出上限时宁可降一点分辨率
+    if (w / aspect > MAX_TEX_H) w = Math.floor(MAX_TEX_H * aspect)
+    const h = Math.round(w / aspect)
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w
       canvas.height = h
@@ -208,10 +223,9 @@ export function createPainter<T extends FeedItem>(init: {
     }
   }
 
-  const paintSlot = (slot: Slot<T>, index: number) => {
+  const paintSlot = (slot: Slot<T>, index: number, top: number) => {
     const w = cardW()
     const x = (contentW - w) / 2
-    const top = padTop + slot.y
     const s = Math.min(1, Math.max(0, slot.s))
     if (s <= 0.001) return
     ctx.save()
@@ -238,18 +252,29 @@ export function createPainter<T extends FeedItem>(init: {
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(k, 0, 0, k, 0, -scroll * k)
+    if (loop) {
+      // 内容按周期 P 首尾相接；P 和纹理高度不必相等，接缝落在圆柱背面看不见
+      const P = period()
+      if (P <= 0) return
+      slots.forEach((slot, i) => {
+        for (let yy = mod(slot.y - scroll, P) - P; yy < viewHeight; yy += P) {
+          if (yy + L.itemHeight > 0) paintSlot(slot, i, scroll + yy)
+        }
+      })
+      return
+    }
     slots.forEach((slot, i) => {
       const top = padTop + slot.y
       if (top + L.itemHeight < scroll || top > scroll + viewHeight) return
-      paintSlot(slot, i)
+      paintSlot(slot, i, top)
     })
   }
 
   return {
     canvas,
-    pageAspect: PAGE_ASPECT,
+    pageAspect: aspect,
     resize,
-    maxScroll: () => Math.max(0, padTop * 2 + slots.length * slotH() - L.gap - viewHeight),
+    maxScroll: () => (loop ? Infinity : Math.max(0, padTop * 2 + slots.length * slotH() - L.gap - viewHeight)),
     viewHeight: () => viewHeight,
     busy: () => animating,
     push(item, animate) {
@@ -262,6 +287,18 @@ export function createPainter<T extends FeedItem>(init: {
       } else settle()
       dirty = true
     },
+    remove(item, animate) {
+      const i = slots.findIndex((s) => s.item === item)
+      if (i < 0) return false
+      const [gone] = slots.splice(i, 1)
+      if (gone === hovered) hovered = null
+      if (animate && slots.length) {
+        if (!animating) last = performance.now()
+        animating = true
+      } else settle()
+      dirty = true
+      return true
+    },
     setItems(items) {
       slots = items.slice(0, maxItems).map((item) => ({ item, y: 0, vy: 0, s: 1, vs: 0 }))
       settle()
@@ -272,6 +309,24 @@ export function createPainter<T extends FeedItem>(init: {
     items: () => slots.map((s) => s.item),
     itemAt: (i) => slots[i]?.item ?? null,
     slotKey: (i) => slots[i] ?? null,
+    scrollForIndex(i, from) {
+      const raw = padTop + i * slotH() + L.itemHeight / 2 - viewHeight / 2
+      if (!loop) return raw
+      const P = period()
+      return P > 0 ? from + mod(raw - from + P / 2, P) - P / 2 : from
+    },
+    centerIndex(scroll) {
+      const cy = scroll + viewHeight / 2
+      const P = period()
+      let best = -1
+      let bestD = Infinity
+      slots.forEach((s, i) => {
+        const c = padTop + s.y + L.itemHeight / 2
+        const d = loop ? Math.abs(mod(cy - c + P / 2, P) - P / 2) : Math.abs(cy - c)
+        if (d < bestD) ((bestD = d), (best = i))
+      })
+      return best
+    },
     setTheme(t) {
       theme = t
       dirty = true
@@ -301,10 +356,12 @@ export function createPainter<T extends FeedItem>(init: {
       const w = cardW()
       const x = (contentW - w) / 2
       if (cx < x || cx > x + w) return -1
+      const P = period()
       for (let i = 0; i < slots.length; i++) {
-        const top = padTop + slots[i].y
         // 入场中的卡片按当前缩放后的高度算，还很小时不让点
-        if (slots[i].s > 0.5 && cy >= top && cy <= top + L.itemHeight * slots[i].s) return i
+        if (slots[i].s <= 0.5) continue
+        const d = loop ? mod(cy - slots[i].y, P) : cy - (padTop + slots[i].y)
+        if (d >= 0 && d <= L.itemHeight * slots[i].s) return i
       }
       return -1
     },

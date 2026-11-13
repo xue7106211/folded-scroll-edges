@@ -74,7 +74,7 @@ property：`items`、`options`（完整配置）、`theme`、`feed`（内部实�
 | `items` | `[]` | `FeedItem[]`：`title` 必填，`description`、`time`、`icon`、`color`、`id` 可选 |
 | `theme` | `'dark'` | 预设名，或 `{ base: 'light', card: '#fafafa', ... }` 覆盖部分字段 |
 | `layout` | 见 `defaultLayout` | `cardMaxWidth` 360、`itemHeight` 64、`gap` 8、`radius` 16、`font`、字号等 |
-| `cylinder` | 见 `defaultCylinder` | `arc` 128°、`fov` 70.6°、`feather` 0.22、`edgeFade` 0.14、`maxDpr` 2。只在创建时生效 |
+| `cylinder` | 见 `defaultCylinder` | `arc` 128°、`fov` 70.6°、`feather` 0.22、`edgeFade` 0.14、`maxDpr` 2、`loop` false。`loop: true` 闭合成整圈、无限滚动，背面自动隐藏。只在创建时生效 |
 | `motion` | 见 `defaultMotion` | `reducedMotion: 'auto'`、`spring { stiffness: 350, damping: 40 }`、`inertia`、`wheelSpeed`、`dragSpeed` |
 | `tilt` | `{ yaw: 3, pitch: 2, pull: 0.012, smoothing: 0.16 }` | 悬停倾斜，`false` 关闭。角度不建议超过 5°，文字会变软 |
 | `autoplay` | `false` | `{ interval: 1000, next?: (n) => item }`。没有 `next` 时循环 `items` |
@@ -90,6 +90,9 @@ property：`items`、`options`（完整配置）、`theme`、`feed`（内部实�
 | --- | --- |
 | `push(item)` | 顶部插入一条，带入场动画 |
 | `setItems(items)` | 整体替换，不播放动画 |
+| `remove(item)` | 按对象引用移除一条，下方卡片带动画补位 |
+| `redraw()` | 数据没变、但 `renderItem` 的画面随时间变化时请求重画 |
+| `scrollToIndex(i, { animate })` / `getCenterIndex()` | 把第 i 条滚到正面中央 / 当前正面中央是第几条 |
 | `getItems()` | 当前条目，顶部在前 |
 | `setTheme(theme)` / `setOptions(opts)` | 热更新 |
 | `scrollTo(px, { animate })` / `getScroll()` / `getMaxScroll()` | 滚动位置，单位是内容 px |
@@ -127,6 +130,15 @@ createCylinderFeed(el, {
 - **降级**：没有 WebGL2 时，隐藏的 `<ol>` 直接显示为普通列表。WebGL 上下文丢失后会自动重建。
 - **字体**：canvas 文字按绘制时已加载的字体渲染，字体晚到后组件会自动重画。字体由使用方自行加载。
 - **减少动态**：跟随 `prefers-reduced-motion`，关闭惯性、入场动画和悬停倾斜。
+
+## 探索页
+
+`explore/` 下有四个演示，都只用公开 API，`npm run dev` 后从 `/explore/scroll.html` 进入，页面顶部可以互相切换：
+
+- **手卷**（`scroll.html`）：《春江花月夜》一联一行卷在圆柱上，滚得比列表慢，卷尾一枚朱印。
+- **无常**（`decay.html`）：通知只停留 24 秒，越来越淡，到期用 `remove()` 离开，点一下可以提前放下。
+- **节气**（`loop.html`）：`cylinder.loop` 闭合圆柱，二十四节气绕一整圈，今天所在的节气停在正面。
+- **呼吸**（`breath.html`）：吸 4 秒、呼 6 秒，每次吸气落下一句，整列随呼吸起伏。
 
 ## 本仓库开发
 

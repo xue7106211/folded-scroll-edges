@@ -77,6 +77,8 @@ export interface CylinderOptions {
   edgeFade: number
   /** 设备像素比上限，控制纹理和画布分辨率 */
   maxDpr: number
+  /** 闭合成整圈圆柱，内容首尾相接、无限滚动。开启后忽略 arc */
+  loop: boolean
 }
 
 export interface MotionOptions {
@@ -165,11 +167,20 @@ export interface CylinderFeed<T extends FeedItem = FeedItem> {
   push(item: T): void
   /** 整体替换，不播放动画 */
   setItems(items: T[]): void
+  /** 移除一条，下方卡片带动画补位。传同一个对象引用 */
+  remove(item: T): void
+  /** 数据没变但 renderItem 的画面随时间变化时，请求重画一帧 */
+  redraw(): void
   getItems(): readonly T[]
   setTheme(theme: ThemeInput): void
   setOptions(options: LiveOptions<T>): void
   scrollTo(scroll: number, options?: { animate?: boolean }): void
+  /** 把第 index 条滚到圆柱正面中央 */
+  scrollToIndex(index: number, options?: { animate?: boolean }): void
+  /** 当前正面中央的条目下标，没有条目时为 -1 */
+  getCenterIndex(): number
   getScroll(): number
+  /** loop 模式下为 Infinity */
   getMaxScroll(): number
   /** 开始或继续自动插入 */
   play(): void
