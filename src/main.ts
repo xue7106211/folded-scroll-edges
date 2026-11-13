@@ -256,25 +256,66 @@ function syncThemeColor() {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 }
 
-function applyView(next: View) {
+const scrollMeta = document.getElementById('scroll-meta')!
+// 每种样式淡入淡出时要一起动的元素
+const parts = (v: View) => (v === 'feed' ? [app] : [scrollEl, scrollMeta])
+
+function show(next: View, opacity: number) {
   view = next
   document.documentElement.dataset.view = next
   app.hidden = next !== 'feed'
   scrollEl.hidden = next !== 'scroll'
-  if (next === 'scroll' && !scrollFeed) scrollFeed = mountScroll(scrollEl, document.getElementById('scroll-meta')!)
+  parts(next).forEach((el) => (el.style.opacity = String(opacity)))
+  if (next === 'scroll' && !scrollFeed) scrollFeed = mountScroll(scrollEl, scrollMeta)
+}
+
+const setPressed = (next: View) =>
   document.querySelectorAll<HTMLButtonElement>('.dock [data-view]').forEach((btn) => {
     btn.setAttribute('aria-pressed', String(btn.dataset.view === next))
   })
-  syncThemeColor()
+
+// 先淡出旧的再淡入新的：两层文字叠着交叉淡化会糊成一片
+const FADE_OUT = 140
+const FADE_IN = 220
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)')
+const fade = (els: HTMLElement[], to: number, duration: number) =>
+  Promise.all(
+    els.map(async (el) => {
+      if (reduceQuery.matches) return void (el.style.opacity = String(to))
+      // 只给终点：中途再点一次时从当前不透明度接着走，不会跳回 1
+      const a = el.animate([{ opacity: to }], { duration, easing: EASE, fill: 'forwards' })
+      await a.finished
+      el.style.opacity = String(to)
+      a.cancel()
+    }),
+  )
+
+let wanted: View = view
+let switching = false
+async function switchView(next: View) {
+  wanted = next
+  setPressed(next)
+  if (switching) return
+  switching = true
+  // 过渡中又点了另一个，就接着切到最后点的那个
+  while (view !== wanted) {
+    await fade(parts(view), 0, FADE_OUT)
+    show(wanted, 0)
+    await fade(parts(view), 1, FADE_IN)
+  }
+  switching = false
 }
 
-applyView(view)
+show(view, 1)
+setPressed(view)
+syncThemeColor()
 
 document.querySelector('.dock')?.addEventListener('click', (e) => {
   const next = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-view]')?.dataset.view
-  if (!isView(next) || next === view) return
+  if (!isView(next) || next === wanted) return
   localStorage.setItem('cyl-view', next)
-  applyView(next)
+  void switchView(next)
 })
 
 // 系统切换深浅色时，页面由 CSS 媒体查询处理，canvas 里的颜色要另外通知；手卷自己监听
