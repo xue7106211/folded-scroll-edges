@@ -250,12 +250,9 @@ let view: View = isView(savedView) ? savedView : 'feed'
 const scrollEl = document.getElementById('scroll')!
 let scrollFeed: ReturnType<typeof mountScroll> | null = null
 
-const PAGE_COLORS = {
-  feed: { dark: '#070707', light: '#eceae4' },
-  scroll: { dark: '#171512', light: '#ece6d8' },
-}
+// 切换只换中间的组件，背景和参数面板不动
 function syncThemeColor() {
-  const color = PAGE_COLORS[view][feedTheme() === 'light' ? 'light' : 'dark']
+  const color = feedTheme() === 'light' ? '#eceae4' : '#070707'
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 }
 

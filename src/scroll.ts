@@ -33,10 +33,10 @@ const ITEMS: Line[] = [
   { kind: 'end', title: '终' },
 ]
 
-// 浅色是生宣上的墨和朱印，深色是夜里的旧纸：字反成米白，印泥略提亮。纸色本身在 style.css 的 html[data-view='scroll']
+// 字直接落在页面背景上（和通知列表共用同一个背景）：浅色底用墨色，深色底用米白，印泥在深色底上略提亮
 const PALETTES = {
-  light: { ink: '#2a2622', muted: '#756c61', seal: '#a8321e', sealText: '#f6efe2' },
-  dark: { ink: '#e4dccb', muted: '#9a9182', seal: '#b5442c', sealText: '#f6efe2' },
+  light: { ink: '#2a2622', muted: '#6e665c', seal: '#a8321e', sealText: '#f6efe2' },
+  dark: { ink: '#e8e2d6', muted: '#9a9488', seal: '#b5442c', sealText: '#f6efe2' },
 }
 const SERIF = '"Songti SC", "Noto Serif SC", STSong, SimSun, serif'
 
