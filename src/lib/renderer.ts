@@ -155,11 +155,8 @@ function buildCurvedPanel(segX: number, segY: number, radius: number, width: num
   for (let j = 0; j <= segY; j++) {
     const t = j / segY
     const angle = arc / 2 - t * arc
-    const c = Math.cos(angle)
-    const facing = Math.max(0, c)
-    // 转到侧面以后再压到 0：闭合圆柱的背面不能透过卡片间隙露出反着的字。128° 以内这一项恒为 1
-    const back = Math.min(1, Math.max(0, (c + 0.05) / 0.25))
-    const shade = (shadeMin + (1 - shadeMin) * Math.pow(facing, 1.35)) * back * back * (3 - 2 * back)
+    const facing = Math.max(0, Math.cos(angle))
+    const shade = shadeMin + (1 - shadeMin) * Math.pow(facing, 1.35)
     for (let i = 0; i <= segX; i++) {
       const u = i / segX
       positions.push((u - 0.5) * width, Math.sin(angle) * radius, Math.cos(angle) * radius)
@@ -218,7 +215,7 @@ export function createRenderer(
   const arc = (opts.arc * Math.PI) / 180
   const fovy = (opts.fov * Math.PI) / 180
   const radius = panelWidth / pageAspect / arc
-  const geo = buildCurvedPanel(48, arc > Math.PI ? 240 : 120, radius, panelWidth, arc, opts.shadeMin)
+  const geo = buildCurvedPanel(48, 120, radius, panelWidth, arc, opts.shadeMin)
   const vao = gl.createVertexArray()!
   gl.bindVertexArray(vao)
 

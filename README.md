@@ -74,7 +74,7 @@ property：`items`、`options`（完整配置）、`theme`、`feed`（内部实�
 | `items` | `[]` | `FeedItem[]`：`title` 必填，`description`、`time`、`icon`、`color`、`id` 可选 |
 | `theme` | `'dark'` | 预设名，或 `{ base: 'light', card: '#fafafa', ... }` 覆盖部分字段 |
 | `layout` | 见 `defaultLayout` | `cardMaxWidth` 360、`itemHeight` 64、`gap` 8、`radius` 16、`font`、字号等 |
-| `cylinder` | 见 `defaultCylinder` | `arc` 128°、`fov` 70.6°、`feather` 0.22、`edgeFade` 0.14、`maxDpr` 2、`loop` false。`loop: true` 闭合成整圈、无限滚动，背面自动隐藏。只在创建时生效 |
+| `cylinder` | 见 `defaultCylinder` | `arc` 128°、`fov` 70.6°、`feather` 0.22、`edgeFade` 0.14、`maxDpr` 2。只在创建时生效 |
 | `motion` | 见 `defaultMotion` | `reducedMotion: 'auto'`、`spring { stiffness: 350, damping: 40 }`、`inertia`、`wheelSpeed`、`dragSpeed` |
 | `tilt` | `{ yaw: 3, pitch: 2, pull: 0.012, smoothing: 0.16 }` | 悬停倾斜，`false` 关闭。角度不建议超过 5°，文字会变软 |
 | `autoplay` | `false` | `{ interval: 1000, next?: (n) => item }`。没有 `next` 时循环 `items` |
@@ -90,9 +90,7 @@ property：`items`、`options`（完整配置）、`theme`、`feed`（内部实�
 | --- | --- |
 | `push(item)` | 顶部插入一条，带入场动画 |
 | `setItems(items)` | 整体替换，不播放动画 |
-| `remove(item)` | 按对象引用移除一条，下方卡片带动画补位 |
-| `redraw()` | 数据没变、但 `renderItem` 的画面随时间变化时请求重画 |
-| `scrollToIndex(i, { animate })` / `getCenterIndex()` | 把第 i 条滚到正面中央 / 当前正面中央是第几条 |
+| `getCenterIndex()` | 当前正面中央是第几条，没有条目时为 -1 |
 | `getItems()` | 当前条目，顶部在前 |
 | `setTheme(theme)` / `setOptions(opts)` | 热更新 |
 | `scrollTo(px, { animate })` / `getScroll()` / `getMaxScroll()` | 滚动位置，单位是内容 px |
@@ -133,10 +131,10 @@ createCylinderFeed(el, {
 
 ## 演示页的两种样式
 
-演示页底部左侧可以切换两种样式，选择记在 `localStorage['cyl-view']`：
+演示页底部可以切换两种样式，深浅色跟随系统，选择记在 `localStorage['cyl-view']`：
 
 - **通知**：默认样式，即上面描述的通知列表，右上角有参数面板。
-- **手卷**：《春江花月夜》一联一行卷在圆柱上，衬线字铺在生宣色的纸上，滚得比列表慢，卷尾一枚朱印。左上角显示读到第几联。这个样式有自己的纸色，所以切过去后背景切换和参数面板都会收起。代码在 `src/scroll.ts`，只用了公开 API。
+- **手卷**：《春江花月夜》一联一行卷在圆柱上，衬线字铺在生宣色的纸上，滚得比列表慢，卷尾一枚朱印。左上角显示读到第几联。深色系统下是深色旧纸配米白字，浅色系统下是生宣配墨字。参数面板只对通知列表有意义，切过去后会收起。代码在 `src/scroll.ts`，只用了公开 API。
 
 ## 本仓库开发
 

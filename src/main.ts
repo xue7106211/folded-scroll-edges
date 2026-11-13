@@ -16,7 +16,6 @@ import {
 import { createPanel, type Group } from './panel'
 import { mountScroll } from './scroll'
 
-type Bg = 'dark' | 'light' | 'color'
 type View = 'feed' | 'scroll'
 
 // 底块是一组压暗的印刷色卡色，白色图形在每块上的对比度都 ≥ 3.8:1
@@ -30,13 +29,9 @@ const NOTICES: FeedItem[] = [
   { title: '林晓评论了设计稿', description: '首页改版第 3 页：按钮间距再大一点', time: '2 分钟前', icon: icons.comment, color: '#2F5FB3' },
 ]
 
-const THEME_COLORS: Record<Bg, string> = { dark: '#070707', light: '#eceae4', color: '#141312' }
-// 彩色背景上用实色卡面，见 themes.warm
-const FEED_THEME: Record<Bg, ThemePreset> = { dark: 'dark', light: 'light', color: 'warm' }
-
-const isBg = (v: unknown): v is Bg => v === 'dark' || v === 'light' || v === 'color'
-const saved = localStorage.getItem('cyl-bg')
-let bg: Bg = isBg(saved) ? saved : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+// 深浅色跟随系统
+const lightQuery = matchMedia('(prefers-color-scheme: light)')
+const feedTheme = (): ThemePreset => (lightQuery.matches ? 'light' : 'dark')
 
 // 序号放在实例外面，重建实例后插入顺序接得上
 let seq = 0
@@ -160,7 +155,7 @@ const app = document.getElementById('app')!
 let feed: CylinderFeed
 
 function mount(items: FeedItem[]) {
-  feed = createCylinderFeed(app, { items, theme: FEED_THEME[bg], ariaLabel: '设计协作通知', ...options() })
+  feed = createCylinderFeed(app, { items, theme: feedTheme(), ariaLabel: '设计协作通知', ...options() })
   feed.on('itemclick', ({ item }) => console.info('[demo] itemclick', item.title))
   if (import.meta.env.DEV) Object.assign(window, { feed })
 }
@@ -246,24 +241,6 @@ const panel = createPanel<State>({
 })
 document.body.append(panel.element)
 
-// ---- 背景切换 ----
-function applyBg(mode: Bg) {
-  bg = mode
-  document.documentElement.dataset.bg = mode
-  syncThemeColor()
-  document.querySelectorAll<HTMLButtonElement>('.bg-switch [data-bg]').forEach((btn) => {
-    btn.setAttribute('aria-pressed', String(btn.dataset.bg === mode))
-  })
-  feed.setTheme(FEED_THEME[mode])
-}
-
-document.querySelector('.bg-switch')?.addEventListener('click', (e) => {
-  const mode = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-bg]')?.dataset.bg
-  if (!isBg(mode)) return
-  localStorage.setItem('cyl-bg', mode)
-  applyBg(mode)
-})
-
 // ---- 展示样式：通知 / 手卷 ----
 // 两个实例各占一个容器，切走的那个 display: none，组件的 IntersectionObserver 会停掉它的渲染循环，
 // 切回来时滚动位置和条目都还在。手卷第一次切过去才创建，不用的人不多开一个 GL 上下文
@@ -273,8 +250,12 @@ let view: View = isView(savedView) ? savedView : 'feed'
 const scrollEl = document.getElementById('scroll')!
 let scrollFeed: ReturnType<typeof mountScroll> | null = null
 
+const PAGE_COLORS = {
+  feed: { dark: '#070707', light: '#eceae4' },
+  scroll: { dark: '#171512', light: '#ece6d8' },
+}
 function syncThemeColor() {
-  const color = view === 'scroll' ? '#ece6d8' : THEME_COLORS[bg]
+  const color = PAGE_COLORS[view][feedTheme() === 'light' ? 'light' : 'dark']
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 }
 
@@ -291,11 +272,16 @@ function applyView(next: View) {
 }
 
 applyView(view)
-applyBg(bg)
 
 document.querySelector('.dock')?.addEventListener('click', (e) => {
   const next = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-view]')?.dataset.view
   if (!isView(next) || next === view) return
   localStorage.setItem('cyl-view', next)
   applyView(next)
+})
+
+// 系统切换深浅色时，页面由 CSS 媒体查询处理，canvas 里的颜色要另外通知；手卷自己监听
+lightQuery.addEventListener('change', () => {
+  feed.setTheme(feedTheme())
+  syncThemeColor()
 })

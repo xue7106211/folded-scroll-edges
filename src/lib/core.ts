@@ -81,15 +81,12 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
     spring: motion.spring,
     maxItems: options.maxItems ?? 50,
     feather: cyl.feather,
-    loop: cyl.loop,
     renderItem,
   })
   painter.setItems(seed)
-  // 闭合圆柱就是展开 360° 的面板
-  const geometry = { ...cyl, arc: cyl.loop ? 360 : cyl.arc }
   let renderer: Renderer | null = null
   try {
-    renderer = createRenderer(canvas, painter.pageAspect, geometry)
+    renderer = createRenderer(canvas, painter.pageAspect, cyl)
   } catch (err) {
     console.error('[cylinder-feed] WebGL 初始化失败，退回 DOM 列表', err)
   }
@@ -127,7 +124,7 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
   let cssW = 0
   let cssH = 0
 
-  const clamp = (v: number) => (cyl.loop ? v : Math.min(Math.max(v, 0), painter.maxScroll()))
+  const clamp = (v: number) => Math.min(Math.max(v, 0), painter.maxScroll())
   const pow = (base: number, dt: number) => Math.pow(base, dt / FRAME)
 
   const pickIndex = (x: number, y: number) => {
@@ -377,11 +374,8 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
         PageDown: target + page,
         PageUp: target - page,
         ' ': target + (e.shiftKey ? -page : page),
-      }
-      // 闭合圆柱没有首尾
-      if (!cyl.loop) {
-        map.Home = 0
-        map.End = painter.maxScroll()
+        Home: 0,
+        End: painter.maxScroll(),
       }
       if (!(e.key in map)) return
       e.preventDefault()
@@ -407,7 +401,7 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
     'webglcontextrestored',
     () => {
       try {
-        renderer = createRenderer(canvas, painter.pageAspect, geometry)
+        renderer = createRenderer(canvas, painter.pageAspect, cyl)
       } catch {
         renderer = null
       }
@@ -444,18 +438,6 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
       wake()
     },
     getItems: () => painter.items(),
-    remove(item) {
-      if (!painter.remove(item, !reduced())) return
-      cursorStale = true
-      target = clamp(target)
-      pos = clamp(pos)
-      listDirty = true
-      wake()
-    },
-    redraw() {
-      painter.invalidate()
-      wake()
-    },
     setTheme(t) {
       theme = resolveTheme(t)
       painter.setTheme(theme)
@@ -499,9 +481,6 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
       wake()
     },
     getScroll: () => pos,
-    scrollToIndex(index, opts) {
-      api.scrollTo(painter.scrollForIndex(index, target), opts)
-    },
     getCenterIndex: () => painter.centerIndex(pos),
     getMaxScroll: () => painter.maxScroll(),
     play() {

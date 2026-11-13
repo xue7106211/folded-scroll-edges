@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-bg="dark" data-view="feed">
+<html lang="zh-CN" data-view="feed">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -14,17 +14,9 @@
 <div id="app" class="view"></div>
 <div id="scroll" class="view" hidden></div>
 <p class="scroll-meta" id="scroll-meta" aria-live="polite"></p>
-<div class="dock">
-  <div class="seg" role="group" aria-label="展示样式">
-    <button type="button" data-view="feed" aria-pressed="true">通知</button>
-    <button type="button" data-view="scroll" aria-pressed="false">手卷</button>
-  </div>
-  <span class="dock-sep" aria-hidden="true"></span>
-  <div class="seg bg-switch" role="group" aria-label="背景模式">
-    <button type="button" data-bg="dark" aria-pressed="true">深色</button>
-    <button type="button" data-bg="light" aria-pressed="false">浅色</button>
-    <button type="button" data-bg="color" aria-pressed="false">彩色</button>
-  </div>
+<div class="dock" role="group" aria-label="展示样式">
+  <button type="button" data-view="feed" aria-pressed="true">通知</button>
+  <button type="button" data-view="scroll" aria-pressed="false">手卷</button>
 </div>
 <script type="module" src="/src/main.ts"></script>
 </body>

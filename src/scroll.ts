@@ -1,5 +1,5 @@
 // 手卷：《春江花月夜》一联一行卷在圆柱上，一次只展开一段。只通过公开 API 使用组件
-import { createCylinderFeed, type CylinderFeed, type FeedItem } from './lib'
+import { createCylinderFeed, type CylinderFeed, type FeedItem, type ThemeInput } from './lib'
 
 interface Line extends FeedItem {
   kind: 'title' | 'line' | 'end'
@@ -33,16 +33,25 @@ const ITEMS: Line[] = [
   { kind: 'end', title: '终' },
 ]
 
-// 生宣纸上的墨色和朱印；纸色本身在 style.css 的 html[data-view='scroll']
-const INK = '#2a2622'
-const INK_MUTED = '#756c61'
-const SEAL = '#a8321e'
+// 浅色是生宣上的墨和朱印，深色是夜里的旧纸：字反成米白，印泥略提亮。纸色本身在 style.css 的 html[data-view='scroll']
+const PALETTES = {
+  light: { ink: '#2a2622', muted: '#756c61', seal: '#a8321e', sealText: '#f6efe2' },
+  dark: { ink: '#e4dccb', muted: '#9a9182', seal: '#b5442c', sealText: '#f6efe2' },
+}
 const SERIF = '"Songti SC", "Noto Serif SC", STSong, SimSun, serif'
 
+const lightQuery = matchMedia('(prefers-color-scheme: light)')
+const palette = () => PALETTES[lightQuery.matches ? 'light' : 'dark']
+const theme = (): ThemeInput => {
+  const p = palette()
+  return { base: 'light', card: 'transparent', border: 'transparent', shadows: [], text: p.ink, secondary: p.muted, muted: p.muted }
+}
+
 export function mountScroll(container: HTMLElement, meta: HTMLElement): CylinderFeed<Line> {
+  let p = palette()
   const feed = createCylinderFeed<Line>(container, {
     items: ITEMS,
-    theme: { base: 'light', card: 'transparent', border: 'transparent', shadows: [], text: INK, secondary: INK_MUTED, muted: INK_MUTED },
+    theme: theme(),
     layout: { font: SERIF, itemHeight: 56, gap: 0, titleSize: 17 },
     cylinder: { arc: 110, feather: 0.26, edgeFade: 0.16 },
     // 纸有分量：滚得慢一些，悬停几乎不动
@@ -56,28 +65,34 @@ export function mountScroll(container: HTMLElement, meta: HTMLElement): Cylinder
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       if (item.kind === 'title') {
-        ctx.fillStyle = INK
+        ctx.fillStyle = p.ink
         ctx.font = `500 22px ${layout.font}`
         ctx.fillText(item.title, cx, cy - 8)
-        ctx.fillStyle = INK_MUTED
+        ctx.fillStyle = p.muted
         ctx.font = `12px ${layout.font}`
         ctx.fillText(item.description ?? '', cx, cy + 18)
       } else if (item.kind === 'end') {
         // 卷尾的朱印
         const S = 28
-        ctx.fillStyle = SEAL
+        ctx.fillStyle = p.seal
         ctx.beginPath()
         ctx.roundRect(cx - S / 2, cy - S / 2, S, S, 4)
         ctx.fill()
-        ctx.fillStyle = '#f6efe2'
+        ctx.fillStyle = p.sealText
         ctx.font = `500 15px ${layout.font}`
         ctx.fillText(item.title, cx, cy + 1)
       } else {
-        ctx.fillStyle = INK
+        ctx.fillStyle = p.ink
         ctx.font = `${layout.titleSize}px ${layout.font}`
         ctx.fillText(item.title, cx, cy)
       }
     },
+  })
+
+  // setTheme 会让整张纹理重画，renderItem 顺带读到新的 p
+  lightQuery.addEventListener('change', () => {
+    p = palette()
+    feed.setTheme(theme())
   })
 
   const showProgress = () => {

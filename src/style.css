@@ -6,8 +6,8 @@
   padding: 0;
 }
 
-:root,
-[data-bg='dark'] {
+/* 深浅色跟随系统，没有手动切换 */
+:root {
   color-scheme: dark;
   --page-bg: #070707;
   --page-fg: #f2f2f2;
@@ -15,43 +15,7 @@
   --chip-fg: #ededed;
   --chip-border: rgb(255 255 255 / 0.08);
   --chip-active: #262628;
-}
-
-[data-bg='light'] {
-  color-scheme: light;
-  --page-bg: #eceae4;
-  --page-fg: #1a1a1a;
-  --chip-bg: #f5f4f0;
-  --chip-fg: #1a1a1a;
-  --chip-border: rgb(0 0 0 / 0.08);
-  --chip-active: #ffffff;
-}
-
-[data-bg='color'] {
-  color-scheme: dark;
-  --page-bg: #141312;
-  --page-fg: #efe9de;
-  --chip-bg: #1c1a18;
-  --chip-fg: #efe9de;
-  --chip-border: rgb(239 233 222 / 0.1);
-  --chip-active: #2e2b28;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-bg]) {
-    color-scheme: light;
-    --page-bg: #eceae4;
-    --page-fg: #1a1a1a;
-    --chip-bg: #f5f4f0;
-    --chip-fg: #1a1a1a;
-    --chip-border: rgb(0 0 0 / 0.08);
-    --chip-active: #ffffff;
-  }
-}
-
-/* 面板用实色的三档文字，不靠透明度叠加 */
-:root,
-[data-bg='dark'] {
+  /* 面板用实色的三档文字，不靠透明度叠加 */
   --panel-w: 288px;
   --panel-text: #ededed;
   --panel-secondary: #a1a1a6;
@@ -61,26 +25,15 @@
   --panel-mark: #e0644a;
 }
 
-[data-bg='light'] {
-  --panel-text: #1a1a1a;
-  --panel-secondary: #57534e;
-  --panel-muted: #78716c;
-  --panel-track: rgb(26 26 26 / 0.16);
-  --panel-hover: #fafaf8;
-  --panel-mark: #c2452d;
-}
-
-[data-bg='color'] {
-  --panel-text: #efe9de;
-  --panel-secondary: #aaa398;
-  --panel-muted: #8a847a;
-  --panel-track: rgb(239 233 222 / 0.18);
-  --panel-hover: #36322e;
-  --panel-mark: #e0644a;
-}
-
 @media (prefers-color-scheme: light) {
-  :root:not([data-bg]) {
+  :root {
+    color-scheme: light;
+    --page-bg: #eceae4;
+    --page-fg: #1a1a1a;
+    --chip-bg: #f5f4f0;
+    --chip-fg: #1a1a1a;
+    --chip-border: rgb(0 0 0 / 0.08);
+    --chip-active: #ffffff;
     --panel-text: #1a1a1a;
     --panel-secondary: #57534e;
     --panel-muted: #78716c;
@@ -90,15 +43,27 @@
   }
 }
 
-/* 手卷是生宣纸色，不跟背景切换走；写在 html 上，优先级高过 [data-bg] */
+/* 手卷：深色是夜里的旧纸，浅色是生宣；写在 html 上，优先级高过 :root */
 html[data-view='scroll'] {
-  color-scheme: light;
-  --page-bg: #ece6d8;
-  --page-fg: #2a2622;
-  --chip-bg: #f4efe4;
-  --chip-fg: #2a2622;
-  --chip-border: rgb(42 38 34 / 0.1);
-  --chip-active: #fbf8f1;
+  --page-bg: #171512;
+  --page-fg: #e4dccb;
+  --chip-bg: #201d19;
+  --chip-fg: #e4dccb;
+  --chip-border: rgb(228 220 203 / 0.1);
+  --chip-active: #2c2823;
+  --scroll-meta: #9a9182;
+}
+
+@media (prefers-color-scheme: light) {
+  html[data-view='scroll'] {
+    --page-bg: #ece6d8;
+    --page-fg: #2a2622;
+    --chip-bg: #f4efe4;
+    --chip-fg: #2a2622;
+    --chip-border: rgb(42 38 34 / 0.1);
+    --chip-active: #fbf8f1;
+    --scroll-meta: #756c61;
+  }
 }
 
 html,
@@ -110,26 +75,6 @@ body {
   color: var(--page-fg, #f2f2f2);
   font-family: 'Noto Sans SC', system-ui, sans-serif;
   transition: background-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Colorful stage behind the transparent canvas edges */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 30%, #fc5000 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 80% 70%, #524ae9 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 100%, #f5f28e 0%, transparent 45%),
-    linear-gradient(160deg, #1a0f14 0%, #0c1524 50%, #14100c 100%);
-  transition: opacity 0.35s ease;
-}
-
-html[data-bg='color']:not([data-view='scroll']) body::before {
-  opacity: 1;
 }
 
 /* 组件自带上下渐隐遮罩、光标和触控设置，这里只给尺寸 */
@@ -155,7 +100,7 @@ html[data-bg='color']:not([data-view='scroll']) body::before {
   z-index: 2;
   top: 20px;
   left: 24px;
-  color: #756c61;
+  color: var(--scroll-meta);
   font-size: 12px;
   line-height: 20px;
   font-variant-numeric: tabular-nums;
@@ -167,7 +112,7 @@ html[data-view='scroll'] .panel {
   display: none;
 }
 
-/* 底部一条：左边切展示样式，右边切背景；手卷不跟背景走，背景那一段收起 */
+/* 底部切换展示样式 */
 .dock {
   position: fixed;
   z-index: 2;
@@ -175,28 +120,11 @@ html[data-view='scroll'] .panel {
   bottom: max(20px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
-  align-items: center;
   gap: 4px;
   padding: 4px;
   border-radius: 12px;
   background: var(--chip-bg);
   border: 1px solid var(--chip-border);
-}
-
-.seg {
-  display: flex;
-  gap: 4px;
-}
-
-.dock-sep {
-  width: 1px;
-  height: 16px;
-  margin: 0 4px;
-  background: var(--chip-border);
-}
-
-html[data-view='scroll'] :is(.dock-sep, .bg-switch) {
-  display: none;
 }
 
 .dock button {
