@@ -4,30 +4,47 @@ import type { CylinderOptions } from './types'
 const VS = `#version 300 es
 in vec3 aPos;
 in vec2 aUv;
-in float aShade;
 uniform mat4 uMVP;
+uniform mat4 uModel;
 uniform float uFeather;
 out vec2 vUv;
-out float vShade;
 out float vEdge;
+out vec3 vNormal;
+out vec3 vWorld;
 void main() {
   vUv = aUv;
-  vShade = aShade;
   // 面板上下边缘软羽化
   vEdge = smoothstep(0.0, uFeather, aUv.y) * smoothstep(0.0, uFeather, 1.0 - aUv.y);
+  // 圆柱绕 X 轴，法线就是位置去掉 x；model 只有旋转和平移，可以直接用它的 3×3
+  vNormal = mat3(uModel) * normalize(vec3(0.0, aPos.yz));
+  vWorld = (uModel * vec4(aPos, 1.0)).xyz;
   gl_Position = uMVP * vec4(aPos, 1.0);
 }`
 
 const FS = `#version 300 es
 precision highp float;
 in vec2 vUv;
-in float vShade;
 in float vEdge;
+in vec3 vNormal;
+in vec3 vWorld;
 uniform sampler2D uTex;
+uniform vec3 uEye;
+uniform float uShadeMin;
 out vec4 o;
+// 灯固定在世界里、略高于视线：下半段比上半段暗一点；倾斜时圆柱在灯下转动，光才会在卡片上移动
+const vec3 LIGHT = normalize(vec3(0.0, 0.08, 1.0));
+// 光带以外最多压暗 3%，光带里保持原色，白卡也看得出光从哪来
+const float SHEEN = 0.03;
 void main() {
-  // 纹理上传时已预乘 alpha，卡片外的透明区域直接透出页面背景
-  o = texture(uTex, vUv) * (vEdge * vShade);
+  vec3 n = normalize(vNormal);
+  float diffuse = max(dot(n, LIGHT), 0.0);
+  float shade = uShadeMin + (1.0 - uShadeMin) * pow(diffuse, 1.35);
+  vec3 h = normalize(LIGHT + normalize(uEye - vWorld));
+  float sheen = 1.0 - SHEEN * (1.0 - pow(max(dot(n, h), 0.0), 24.0));
+  // 纹理已预乘 alpha：透明度只受羽化和朝向影响，光带只压 rgb，系数不超过 1 才不会溢出
+  vec4 t = texture(uTex, vUv);
+  float k = vEdge * shade;
+  o = vec4(t.rgb * (k * sheen), t.a * k);
 }`
 
 type Mat4 = Float32Array
@@ -146,22 +163,18 @@ function transform(m: Mat4, x: number, y: number, z: number): [number, number, n
 }
 
 /** UV 按弧长分布，上下卷走的部分在屏幕上自然被压缩 */
-function buildCurvedPanel(segX: number, segY: number, radius: number, width: number, arc: number, shadeMin: number) {
+function buildCurvedPanel(segX: number, segY: number, radius: number, width: number, arc: number) {
   const positions: number[] = []
   const uvs: number[] = []
-  const shades: number[] = []
   const indices: number[] = []
   const stride = segX + 1
   for (let j = 0; j <= segY; j++) {
     const t = j / segY
     const angle = arc / 2 - t * arc
-    const facing = Math.max(0, Math.cos(angle))
-    const shade = shadeMin + (1 - shadeMin) * Math.pow(facing, 1.35)
     for (let i = 0; i <= segX; i++) {
       const u = i / segX
       positions.push((u - 0.5) * width, Math.sin(angle) * radius, Math.cos(angle) * radius)
       uvs.push(u, t)
-      shades.push(shade)
     }
   }
   for (let j = 0; j < segY; j++) {
@@ -173,7 +186,6 @@ function buildCurvedPanel(segX: number, segY: number, radius: number, width: num
   return {
     positions: new Float32Array(positions),
     uvs: new Float32Array(uvs),
-    shades: new Float32Array(shades),
     indices: new Uint16Array(indices),
   }
 }
@@ -215,7 +227,7 @@ export function createRenderer(
   const arc = (opts.arc * Math.PI) / 180
   const fovy = (opts.fov * Math.PI) / 180
   const radius = panelWidth / pageAspect / arc
-  const geo = buildCurvedPanel(48, 120, radius, panelWidth, arc, opts.shadeMin)
+  const geo = buildCurvedPanel(48, 120, radius, panelWidth, arc)
   const vao = gl.createVertexArray()!
   gl.bindVertexArray(vao)
 
@@ -231,7 +243,6 @@ export function createRenderer(
   }
   attrib('aPos', geo.positions, 3)
   attrib('aUv', geo.uvs, 2)
-  attrib('aShade', geo.shades, 1)
   const idxBuf = gl.createBuffer()!
   buffers.push(idxBuf)
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf)
@@ -260,6 +271,9 @@ export function createRenderer(
   const uMVP = gl.getUniformLocation(program, 'uMVP')
   const uTex = gl.getUniformLocation(program, 'uTex')
   const uFeather = gl.getUniformLocation(program, 'uFeather')
+  const uModel = gl.getUniformLocation(program, 'uModel')
+  const uEye = gl.getUniformLocation(program, 'uEye')
+  const uShadeMin = gl.getUniformLocation(program, 'uShadeMin')
 
   let viewW = 1
   let viewH = 1
@@ -267,7 +281,8 @@ export function createRenderer(
   let cssH = 1
   let proj = perspective(fovy, 1, 0.1, 20)
   // 略微俯视
-  const view = lookAt([0, 0.1, 2.7], [0, -0.02, radius * 0.5], [0, 1, 0])
+  const eye: [number, number, number] = [0, 0.1, 2.7]
+  const view = lookAt(eye, [0, -0.02, radius * 0.5], [0, 1, 0])
   let model = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
   let mvp = multiply(proj, multiply(view, model))
   let inv: Mat4 | null = null
@@ -357,6 +372,9 @@ export function createRenderer(
       gl.bindTexture(gl.TEXTURE_2D, tex)
       gl.uniform1i(uTex, 0)
       gl.uniform1f(uFeather, Math.max(0.001, opts.feather))
+      gl.uniform1f(uShadeMin, Math.min(1, Math.max(0, opts.shadeMin)))
+      gl.uniform3f(uEye, eye[0], eye[1], eye[2])
+      gl.uniformMatrix4fv(uModel, false, model)
       gl.uniformMatrix4fv(uMVP, false, mvp)
       gl.drawElements(gl.TRIANGLES, geo.indices.length, gl.UNSIGNED_SHORT, 0)
     },

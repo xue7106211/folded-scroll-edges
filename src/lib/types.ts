@@ -26,6 +26,8 @@ export interface FeedTheme {
   /** 卡片底部向上渐隐的内高光（Magic UI 深色款），不填则纯色卡面 */
   cardGlow?: string
   border: string
+  /** 悬停时的描边，缺省沿用 border */
+  borderHover?: string
   /** 多层投影，单位是内容 px，会随缩放自动换算 */
   shadows?: { y: number; blur: number; color: string }[]
   text: string
@@ -119,6 +121,8 @@ export interface ItemBox<T extends FeedItem = FeedItem> {
   width: number
   height: number
   hovered: boolean
+  /** 正在被按住（还没移动到算作拖拽） */
+  pressed: boolean
   theme: FeedTheme
   layout: FeedLayout
 }

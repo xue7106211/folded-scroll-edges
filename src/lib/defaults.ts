@@ -16,6 +16,7 @@ export const themes: Record<ThemePreset, FeedTheme> = {
     card: 'rgb(255 255 255 / 0.02)',
     cardGlow: 'rgb(255 255 255 / 0.12)',
     border: 'rgb(255 255 255 / 0.1)',
+    borderHover: 'rgb(255 255 255 / 0.16)',
     // 纯白在深色底上会发散，主色降到 92%
     text: 'rgb(255 255 255 / 0.92)',
     secondary: 'rgb(255 255 255 / 0.62)',
@@ -27,6 +28,7 @@ export const themes: Record<ThemePreset, FeedTheme> = {
   light: {
     card: '#fff',
     border: 'rgb(0 0 0 / 0.03)',
+    borderHover: 'rgb(0 0 0 / 0.08)',
     shadows: [
       { y: 12, blur: 24, color: 'rgb(0 0 0 / 0.05)' },
       { y: 2, blur: 4, color: 'rgb(0 0 0 / 0.05)' },
@@ -42,6 +44,7 @@ export const themes: Record<ThemePreset, FeedTheme> = {
   warm: {
     card: '#1c1a18',
     border: 'rgb(239 233 222 / 0.08)',
+    borderHover: 'rgb(239 233 222 / 0.14)',
     shadows: [{ y: 8, blur: 24, color: 'rgb(0 0 0 / 0.35)' }],
     text: '#efe9de',
     secondary: '#aaa398',
