@@ -1,7 +1,8 @@
 // 在离屏 2D canvas 上画整张列表（含滚动和 spring 动画），作为圆柱纹理。复刻 Magic UI Animated List
 import type { FeedIcon, FeedItem, FeedLayout, FeedTheme, ItemBox, RenderItem } from './types'
 
-type Slot<T> = { item: T; y: number; vy: number; s: number; vs: number }
+// h：悬停进度（线性 0–1，画的时候再套缓动）；p / vp：按下深度和它的弹簧速度
+type Slot<T> = { item: T; y: number; vy: number; s: number; vs: number; h: number; p: number; vp: number }
 
 export type Painter<T extends FeedItem> = {
   canvas: HTMLCanvasElement
@@ -22,6 +23,8 @@ export type Painter<T extends FeedItem> = {
   itemAt: (index: number) => T | null
   /** 卡片位置的身份标识。同一个条目对象可能出现在多张卡片上，悬停判断要比这个 */
   slotKey: (index: number) => object | null
+  /** 正面中央最近的条目下标，没有条目时为 -1 */
+  centerIndex: (scroll: number) => number
   setTheme: (theme: FeedTheme) => void
   setLayout: (layout: FeedLayout) => void
   setSpring: (stiffness: number, damping: number) => void
@@ -30,6 +33,8 @@ export type Painter<T extends FeedItem> = {
   /** 面板 UV（0–1）→ 条目下标，未命中返回 -1 */
   hitTest: (u: number, v: number, scroll: number) => number
   setHover: (index: number) => void
+  /** 按住第 index 张卡片，-1 松开；depth 是按下时缩小的比例，减少动态时传 0 */
+  setPress: (index: number, depth: number) => void
   /** 强制下一次 update 重绘，如字体加载完成后 */
   invalidate: () => void
 }
@@ -41,6 +46,13 @@ const DESC_LH = 18
 const TEXT_GAP = 2
 const ICON_GAP = 12
 const GLYPH = 16
+const HOVER_S = 0.15
+// 按下要跟手，比入场弹簧硬得多；临界阻尼，不回弹
+const PRESS_IN = { stiffness: 1600, damping: 80 }
+
+// 等同页面上的 cubic-bezier(0.22, 1, 0.36, 1)（easeOutQuint）
+const easeOut = (x: number) => 1 - Math.pow(1 - x, 5)
+const newSlot = <T,>(item: T, s: number): Slot<T> => ({ item, y: 0, vy: 0, s, vs: 0, h: 0, p: 0, vp: 0 })
 
 /** 超出宽度时截断并补省略号，对应原组件的 overflow-hidden */
 function fitText(ctx: CanvasRenderingContext2D, text: string, maxW: number) {
@@ -82,18 +94,25 @@ export function createPainter<T extends FeedItem>(init: {
   let k = 1
   let slots: Slot<T>[] = []
   let hovered: Slot<T> | null = null
+  let pressed: Slot<T> | null = null
+  let pressDepth = 0
   let last = performance.now()
   let dirty = true
   let lastScroll = NaN
   let animating = false
+  let fx = false
 
   const slotH = () => L.itemHeight + L.gap
   const cardW = () => Math.min(contentW - L.sidePadding * 2, L.cardMaxWidth)
   const settle = () => slots.forEach((s, i) => ((s.y = i * slotH()), (s.vy = 0), (s.s = 1), (s.vs = 0)))
 
-  const step = (x: number, v: number, target: number, dt: number): [number, number] => {
-    v += (-stiffness * (x - target) - damping * v) * dt
+  const step = (x: number, v: number, target: number, dt: number, k = stiffness, c = damping): [number, number] => {
+    v += (-k * (x - target) - c * v) * dt
     return [x + v * dt, v]
+  }
+  // 空闲很久后第一帧的 dt 不要算进动画
+  const kick = () => {
+    if (!animating && !fx) last = performance.now()
   }
 
   const resize = (panelCssW: number, dpr: number) => {
@@ -113,9 +132,10 @@ export function createPainter<T extends FeedItem>(init: {
     dirty = true
   }
 
-  const drawDefault = (box: ItemBox<T>) => {
+  const drawDefault = (box: ItemBox<T>, hover: number, press: number) => {
     const { item, x, y: top, width: w, height: H, theme: t } = box
     const R = L.radius
+    const a0 = ctx.globalAlpha
     // canvas 的 shadow 不受变换影响，需要手动乘缩放；当前变换的 d 已经是 k × 入场缩放
     const shadowK = ctx.getTransform().d
     let fill: string | CanvasGradient = t.card
@@ -140,15 +160,30 @@ export function createPainter<T extends FeedItem>(init: {
       ctx.fill()
     }
     ctx.shadowColor = 'transparent'
-    if (box.hovered) {
+    // 悬停进一档表面色，按下再进一档；都是叠同一个 hover 色，三套主题方向一致
+    for (const amt of [hover, press]) {
+      if (amt <= 0) continue
+      ctx.globalAlpha = a0 * amt
       ctx.fillStyle = t.hover
       ctx.fill()
     }
     ctx.lineWidth = 1
-    ctx.strokeStyle = t.border
     ctx.beginPath()
     ctx.roundRect(x + 0.5, top + 0.5, w - 1, H - 1, R - 0.5)
-    ctx.stroke()
+    // 描边在两种颜色之间交叉淡化，悬停到底时正好是 borderHover
+    const bh = t.borderHover ?? t.border
+    const mix = bh === t.border ? 0 : hover
+    if (mix < 1) {
+      ctx.globalAlpha = a0 * (1 - mix)
+      ctx.strokeStyle = t.border
+      ctx.stroke()
+    }
+    if (mix > 0) {
+      ctx.globalAlpha = a0 * mix
+      ctx.strokeStyle = bh
+      ctx.stroke()
+    }
+    ctx.globalAlpha = a0
 
     let textX = x + L.paddingX
     if (item.icon) {
@@ -220,13 +255,23 @@ export function createPainter<T extends FeedItem>(init: {
     ctx.translate(x + w / 2, top)
     ctx.scale(s, s)
     ctx.translate(-(x + w / 2), -top)
+    const press = Math.min(1, Math.max(0, slot.p))
+    if (press > 0 && pressDepth > 0) {
+      // 按下以卡片中心缩小，像按在一张有弹性的纸上
+      const cy = top + L.itemHeight / 2
+      const ps = 1 - pressDepth * press
+      ctx.translate(x + w / 2, cy)
+      ctx.scale(ps, ps)
+      ctx.translate(-(x + w / 2), -cy)
+    }
     const box: ItemBox<T> = {
       item: slot.item, index, x, y: top, width: w, height: L.itemHeight,
-      hovered: slot === hovered, theme, layout: L,
+      hovered: slot === hovered, pressed: slot === pressed, theme, layout: L,
     }
+    const hover = easeOut(slot.h)
     const def = () => {
       ctx.save()
-      drawDefault(box)
+      drawDefault(box, hover, press)
       ctx.restore()
     }
     if (renderItem) renderItem(ctx, box, def)
@@ -251,27 +296,38 @@ export function createPainter<T extends FeedItem>(init: {
     resize,
     maxScroll: () => Math.max(0, padTop * 2 + slots.length * slotH() - L.gap - viewHeight),
     viewHeight: () => viewHeight,
-    busy: () => animating,
+    busy: () => animating || fx,
     push(item, animate) {
-      slots.unshift({ item, y: 0, vy: 0, s: animate ? 0 : 1, vs: 0 })
+      slots.unshift(newSlot(item, animate ? 0 : 1))
       if (slots.length > maxItems) slots.length = maxItems
       if (animate) {
-        // 长时间空闲后第一帧的 dt 不要算进动画
-        if (!animating) last = performance.now()
+        kick()
         animating = true
       } else settle()
       dirty = true
     },
     setItems(items) {
-      slots = items.slice(0, maxItems).map((item) => ({ item, y: 0, vy: 0, s: 1, vs: 0 }))
+      slots = items.slice(0, maxItems).map((item) => newSlot(item, 1))
       settle()
       hovered = null
+      pressed = null
       animating = false
+      fx = false
       dirty = true
     },
     items: () => slots.map((s) => s.item),
     itemAt: (i) => slots[i]?.item ?? null,
     slotKey: (i) => slots[i] ?? null,
+    centerIndex(scroll) {
+      const cy = scroll + viewHeight / 2
+      let best = -1
+      let bestD = Infinity
+      slots.forEach((s, i) => {
+        const d = Math.abs(cy - (padTop + s.y + L.itemHeight / 2))
+        if (d < bestD) ((bestD = d), (best = i))
+      })
+      return best
+    },
     setTheme(t) {
       theme = t
       dirty = true
@@ -311,21 +367,35 @@ export function createPainter<T extends FeedItem>(init: {
     setHover(index) {
       const next = slots[index] ?? null
       if (next !== hovered) {
+        kick()
         hovered = next
+        fx = true
         dirty = true
       }
+    },
+    setPress(index, depth) {
+      const next = slots[index] ?? null
+      if (next !== pressed) {
+        kick()
+        pressed = next
+        fx = true
+        dirty = true
+      }
+      // 松开时保留原来的深度，让卡片照着按下时的幅度弹回去
+      if (next) pressDepth = depth
     },
     invalidate() {
       dirty = true
     },
     update(now, scroll) {
       let changed = dirty
+      const dt = Math.min(0.05, Math.max(0, (now - last) / 1000))
+      const h = 1 / 240
       if (animating) {
-        let dt = Math.min(0.05, Math.max(0, (now - last) / 1000))
-        const h = 1 / 240
-        while (dt > 0) {
-          const st = Math.min(h, dt)
-          dt -= st
+        let rest = dt
+        while (rest > 0) {
+          const st = Math.min(h, rest)
+          rest -= st
           slots.forEach((s, i) => {
             ;[s.y, s.vy] = step(s.y, s.vy, i * slotH(), st)
             ;[s.s, s.vs] = step(s.s, s.vs, 1, st)
@@ -344,6 +414,35 @@ export function createPainter<T extends FeedItem>(init: {
         })
         animating = moving
         changed = true
+      }
+      if (fx) {
+        let moving = false
+        for (const s of slots) {
+          const ht = s === hovered ? 1 : 0
+          if (s.h !== ht) {
+            s.h = ht ? Math.min(1, s.h + dt / HOVER_S) : Math.max(0, s.h - dt / HOVER_S)
+            if (s.h !== ht) moving = true
+            changed = true
+          }
+          const pt = s === pressed ? 1 : 0
+          if (s.p !== pt || s.vp !== 0) {
+            // 按下用硬弹簧，松开用入场同一组弹簧
+            const k = pt ? PRESS_IN.stiffness : stiffness
+            const c = pt ? PRESS_IN.damping : damping
+            let rest = dt
+            while (rest > 0) {
+              const st = Math.min(h, rest)
+              rest -= st
+              ;[s.p, s.vp] = step(s.p, s.vp, pt, st, k, c)
+            }
+            if (Math.abs(s.p - pt) < 0.002 && Math.abs(s.vp) < 0.02) {
+              s.p = pt
+              s.vp = 0
+            } else moving = true
+            changed = true
+          }
+        }
+        fx = moving
       }
       last = now
       if (scroll !== lastScroll) changed = true

@@ -14,8 +14,9 @@ import {
   type ThemePreset,
 } from './lib'
 import { createPanel, type Group } from './panel'
+import { mountScroll } from './scroll'
 
-type Bg = 'dark' | 'light' | 'color'
+type View = 'feed' | 'scroll'
 
 // 底块是一组压暗的印刷色卡色，白色图形在每块上的对比度都 ≥ 3.8:1
 // 新条目插在顶部、按数组顺序循环，所以从旧到新排，列表从上往下读才是越来越早
@@ -28,13 +29,9 @@ const NOTICES: FeedItem[] = [
   { title: '林晓评论了设计稿', description: '首页改版第 3 页：按钮间距再大一点', time: '2 分钟前', icon: icons.comment, color: '#2F5FB3' },
 ]
 
-const THEME_COLORS: Record<Bg, string> = { dark: '#070707', light: '#eceae4', color: '#141312' }
-// 彩色背景上用实色卡面，见 themes.warm
-const FEED_THEME: Record<Bg, ThemePreset> = { dark: 'dark', light: 'light', color: 'warm' }
-
-const isBg = (v: unknown): v is Bg => v === 'dark' || v === 'light' || v === 'color'
-const saved = localStorage.getItem('cyl-bg')
-let bg: Bg = isBg(saved) ? saved : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+// 深浅色跟随系统
+const lightQuery = matchMedia('(prefers-color-scheme: light)')
+const feedTheme = (): ThemePreset => (lightQuery.matches ? 'light' : 'dark')
 
 // 序号放在实例外面，重建实例后插入顺序接得上
 let seq = 0
@@ -158,7 +155,7 @@ const app = document.getElementById('app')!
 let feed: CylinderFeed
 
 function mount(items: FeedItem[]) {
-  feed = createCylinderFeed(app, { items, theme: FEED_THEME[bg], ariaLabel: '设计协作通知', ...options() })
+  feed = createCylinderFeed(app, { items, theme: feedTheme(), ariaLabel: '设计协作通知', ...options() })
   feed.on('itemclick', ({ item }) => console.info('[demo] itemclick', item.title))
   if (import.meta.env.DEV) Object.assign(window, { feed })
 }
@@ -244,21 +241,85 @@ const panel = createPanel<State>({
 })
 document.body.append(panel.element)
 
-// ---- 背景切换 ----
-function applyBg(mode: Bg) {
-  bg = mode
-  document.documentElement.dataset.bg = mode
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[mode])
-  document.querySelectorAll<HTMLButtonElement>('.bg-switch [data-bg]').forEach((btn) => {
-    btn.setAttribute('aria-pressed', String(btn.dataset.bg === mode))
-  })
-  feed.setTheme(FEED_THEME[mode])
-}
-applyBg(bg)
+// ---- 展示样式：通知 / 手卷 ----
+// 两个实例各占一个容器，切走的那个 display: none，组件的 IntersectionObserver 会停掉它的渲染循环，
+// 切回来时滚动位置和条目都还在。手卷第一次切过去才创建，不用的人不多开一个 GL 上下文
+const isView = (v: unknown): v is View => v === 'feed' || v === 'scroll'
+const savedView = localStorage.getItem('cyl-view')
+let view: View = isView(savedView) ? savedView : 'feed'
+const scrollEl = document.getElementById('scroll')!
+let scrollFeed: ReturnType<typeof mountScroll> | null = null
 
-document.querySelector('.bg-switch')?.addEventListener('click', (e) => {
-  const mode = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-bg]')?.dataset.bg
-  if (!isBg(mode)) return
-  localStorage.setItem('cyl-bg', mode)
-  applyBg(mode)
+// 切换只换中间的组件，背景和参数面板不动
+function syncThemeColor() {
+  const color = feedTheme() === 'light' ? '#eceae4' : '#070707'
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+}
+
+const scrollMeta = document.getElementById('scroll-meta')!
+// 每种样式淡入淡出时要一起动的元素
+const parts = (v: View) => (v === 'feed' ? [app] : [scrollEl, scrollMeta])
+
+function show(next: View, opacity: number) {
+  view = next
+  document.documentElement.dataset.view = next
+  app.hidden = next !== 'feed'
+  scrollEl.hidden = next !== 'scroll'
+  parts(next).forEach((el) => (el.style.opacity = String(opacity)))
+  if (next === 'scroll' && !scrollFeed) scrollFeed = mountScroll(scrollEl, scrollMeta)
+}
+
+const setPressed = (next: View) =>
+  document.querySelectorAll<HTMLButtonElement>('.dock [data-view]').forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.view === next))
+  })
+
+// 先淡出旧的再淡入新的：两层文字叠着交叉淡化会糊成一片
+const FADE_OUT = 140
+const FADE_IN = 220
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)')
+const fade = (els: HTMLElement[], to: number, duration: number) =>
+  Promise.all(
+    els.map(async (el) => {
+      if (reduceQuery.matches) return void (el.style.opacity = String(to))
+      // 只给终点：中途再点一次时从当前不透明度接着走，不会跳回 1
+      const a = el.animate([{ opacity: to }], { duration, easing: EASE, fill: 'forwards' })
+      await a.finished
+      el.style.opacity = String(to)
+      a.cancel()
+    }),
+  )
+
+let wanted: View = view
+let switching = false
+async function switchView(next: View) {
+  wanted = next
+  setPressed(next)
+  if (switching) return
+  switching = true
+  // 过渡中又点了另一个，就接着切到最后点的那个
+  while (view !== wanted) {
+    await fade(parts(view), 0, FADE_OUT)
+    show(wanted, 0)
+    await fade(parts(view), 1, FADE_IN)
+  }
+  switching = false
+}
+
+show(view, 1)
+setPressed(view)
+syncThemeColor()
+
+document.querySelector('.dock')?.addEventListener('click', (e) => {
+  const next = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-view]')?.dataset.view
+  if (!isView(next) || next === wanted) return
+  localStorage.setItem('cyl-view', next)
+  void switchView(next)
+})
+
+// 系统切换深浅色时，页面由 CSS 媒体查询处理，canvas 里的颜色要另外通知；手卷自己监听
+lightQuery.addEventListener('change', () => {
+  feed.setTheme(feedTheme())
+  syncThemeColor()
 })

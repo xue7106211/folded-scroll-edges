@@ -21,6 +21,7 @@ const EASE_DRAG = 0.35
 const WHEEL_INERTIA = 0.35
 const FLING = 59.5
 const CLICK_SLOP = 6
+const PRESS_DEPTH = 0.02
 
 const hiddenStyle =
   'position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap'
@@ -110,6 +111,8 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
   let velocity = 0
   let lastEmitted = NaN
   let dragging = false
+  // 按在卡片上、还没移动到算拖拽：此时保留悬停并显示按下
+  let pressing = false
   let down: { x: number; y: number; id: number; moving: boolean } | null = null
   let lastY = 0
   let lastT = 0
@@ -134,7 +137,7 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
   let hoverKey: object | null = null
   let cursorStale = false
   const refreshHover = () => {
-    const i = pointer && !dragging ? pickIndex(pointer.x, pointer.y) : -1
+    const i = pointer && (!dragging || pressing) ? pickIndex(pointer.x, pointer.y) : -1
     const key = i >= 0 ? painter.slotKey(i) : null
     if (key === hoverKey && !cursorStale) return
     cursorStale = false
@@ -300,6 +303,12 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
       velocity = 0
       canvas.setPointerCapture(e.pointerId)
       canvas.style.cursor = 'grabbing'
+      const i = down.moving || !listeners.get('itemclick')?.size ? -1 : pickIndex(p.x, p.y)
+      if (i >= 0) {
+        pressing = true
+        canvas.style.cursor = 'pointer'
+        painter.setPress(i, reduced() ? 0 : PRESS_DEPTH)
+      }
       wake()
     },
     { signal },
@@ -318,6 +327,12 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
         wake()
       }
       if (!dragging || e.pointerId !== down?.id) return
+      if (pressing && Math.hypot(p.x - down.x, p.y - down.y) >= CLICK_SLOP) {
+        // 移动到这里就是拖拽了，卡片弹回去，悬停也先撤掉
+        pressing = false
+        painter.setPress(-1, 0)
+        canvas.style.cursor = 'grabbing'
+      }
       const dy = e.clientY - lastY
       const dtMs = Math.max(8, e.timeStamp - lastT)
       target = clamp(target + dy * motion.dragSpeed)
@@ -332,6 +347,10 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
   const endDrag = (e: PointerEvent, cancelled: boolean) => {
     if (!dragging || e.pointerId !== down?.id) return
     dragging = false
+    if (pressing) {
+      pressing = false
+      painter.setPress(-1, 0)
+    }
     try {
       canvas.releasePointerCapture(e.pointerId)
     } catch {
@@ -481,6 +500,7 @@ export function createCylinderFeed<T extends FeedItem = FeedItem>(
       wake()
     },
     getScroll: () => pos,
+    getCenterIndex: () => painter.centerIndex(pos),
     getMaxScroll: () => painter.maxScroll(),
     play() {
       if (!autoplay) autoplay = { ...defaultAutoplay }
